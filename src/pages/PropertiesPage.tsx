@@ -23,9 +23,9 @@ interface City {
 interface District {
   id: number;
   name: string;
+  enumName: string;
 }
 
-//Pobieranie danych z filtrem lub bez
 const PropertiesPage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,7 +87,16 @@ const PropertiesPage = () => {
   };
   const handleFilterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchProperties(filters);
+    const city = cities.find((c) => String(c.id) === filters.City);
+    const district = districts.find((d) => d.enumName === filters.District);
+
+    const filtersToSend = {
+      ...filters,
+      City: city?.name,
+      District: district?.enumName,
+    };
+
+    fetchProperties(filtersToSend);
   };
   const handleReset = () => {
     setFilters({});
@@ -99,14 +108,17 @@ const PropertiesPage = () => {
 
   return (
     <div className="p-6">
-      <form onSubmit={handleFilterSubmit} className="mb-6 flex gap-4 flex-wrap">
+      <form
+        onSubmit={handleFilterSubmit}
+        className="mb-15 flex flex-wrap gap-4 items-end"
+      >
         <div>
           <label className="block mb-1">Miasto:</label>
           <select
             name="City"
             value={filters.City ?? ""}
             onChange={handleFilterChange}
-            className="border rounded px-2 py-1"
+            className="border rounded px-2 py-1 w-75"
           >
             <option value="" className="text-black">
               -- Wybierz miasto --
@@ -125,13 +137,13 @@ const PropertiesPage = () => {
             value={filters.District ?? ""}
             onChange={handleFilterChange}
             disabled={!filters.City}
-            className="border rounded px-2 py-1"
+            className="border rounded px-2 py-1 w-75"
           >
             <option value="" className="text-black">
               -- Wybierz osiedle --
             </option>
             {districts.map((d) => (
-              <option key={d.id} value={String(d.id)} className="text-black">
+              <option key={d.id} value={d.enumName} className="text-black">
                 {d.name}
               </option>
             ))}
@@ -167,19 +179,22 @@ const PropertiesPage = () => {
             className="border rounded px-2 py-1"
           />
         </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Filtruj
-        </button>
-        <button
-          type="button"
-          onClick={handleReset}
-          className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
-        >
-          Resetuj
-        </button>
+
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Filtruj
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
+          >
+            Resetuj
+          </button>
+        </div>
       </form>
 
       <ul>
