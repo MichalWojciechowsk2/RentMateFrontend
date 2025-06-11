@@ -6,6 +6,7 @@ import {
   getDistricts,
 } from "../api/property";
 import type { Property } from "../types/Property";
+import type { City, District } from "../types/Location";
 import { Link } from "react-router-dom";
 
 interface Filters {
@@ -14,16 +15,6 @@ interface Filters {
   PriceFrom?: number;
   PriceTo?: number;
   Rooms?: number;
-}
-
-interface City {
-  id: number;
-  name: string;
-}
-interface District {
-  id: number;
-  name: string;
-  enumName: string;
 }
 
 const PropertiesPage = () => {

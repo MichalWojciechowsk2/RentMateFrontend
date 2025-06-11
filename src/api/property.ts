@@ -1,9 +1,14 @@
 import api from "./axiosInstance";
-import type { Property } from "../types/Property";
+import type { Property, CreateProperty } from "../types/Property";
 
 export const getAllProperties = async (): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property");
   return response.data;
+};
+export const createProperty = async (
+  property: CreateProperty
+): Promise<void> => {
+  await api.post("/Property", property);
 };
 
 export const searchProperties = async (filters: any): Promise<Property[]> => {
