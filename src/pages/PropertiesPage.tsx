@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import {
   getAllProperties,
-  searchProperties,
+  filter,
   getCities,
   getDistricts,
 } from "../api/property";
 import type { Property } from "../types/Property";
+import type { City, District } from "../types/Location";
 import { Link } from "react-router-dom";
 
 interface Filters {
@@ -14,16 +15,6 @@ interface Filters {
   PriceFrom?: number;
   PriceTo?: number;
   Rooms?: number;
-}
-
-interface City {
-  id: number;
-  name: string;
-}
-interface District {
-  id: number;
-  name: string;
-  enumName: string;
 }
 
 const PropertiesPage = () => {
@@ -55,7 +46,7 @@ const PropertiesPage = () => {
     try {
       let data;
       if (filters && Object.keys(filters).length > 0) {
-        data = await searchProperties(filters);
+        data = await filter(filters);
       } else {
         data = await getAllProperties();
       }

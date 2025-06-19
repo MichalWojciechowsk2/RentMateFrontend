@@ -3,6 +3,24 @@ export type Property = {
   title: string;
   description: string;
   address: string;
-  roomCount: string;
+  area: number;
+  district: string;
+  roomCount: number;
+  city: string;
+  postalCode: string;
   basePrice: number;
+  baseDeposit: number;
+};
+
+export type CreateProperty = {
+  title: string;
+  description: string;
+  address: string;
+  area: number;
+  district: string;
+  roomCount: number;
+  city: string;
+  postalCode: string;
+  basePrice: number;
+  baseDeposit: number;
 };

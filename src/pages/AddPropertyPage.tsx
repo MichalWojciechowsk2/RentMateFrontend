@@ -1,59 +1,216 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createProperty, getCities, getDistricts } from "../api/property";
+import type { City, District } from "../types/Location";
 import { useNavigate } from "react-router-dom";
-import { PropertyService } from "../services/PropertyService";
-import { useAuth } from "../context/AuthContext";
 
-const AddPropertyPage = () => {
-    const navigate = useNavigate();
-    const { user } = useAuth(); // ✅ pobieramy zalogowanego użytkownika
+const AddPropertyForm = () => {
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    address: "",
+    area: "",
+    district: "",
+    roomCount: "",
+    city: "",
+    postalCode: "",
+    basePrice: "",
+    baseDeposit: "",
+  });
 
-    const [form, setForm] = useState({
-        title: "",
-        location: "",
-        price: 0,
-        description: "",
-        imageUrl: "",
-    });
+  const [cities, setCities] = useState<City[]>([]);
+  const [districts, setDistricts] = useState<District[]>([]);
+  const navigate = useNavigate();
 
-    const [error, setError] = useState("");
+  useEffect(() => {
+    getCities().then(setCities).catch(console.error);
+  }, []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setForm({ ...form, [name]: name === "price" ? parseFloat(value) : value });
-    };
+  useEffect(() => {
+    if (form.city) {
+      getDistricts(form.city).then(setDistricts).catch(console.error);
+    } else {
+      setDistricts([]);
+    }
+  }, [form.city]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            if (!user) throw new Error("Brak użytkownika");
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
-            await PropertyService.create({
-                ...form,
-                ownerId: user.id, // ✅ przypisujemy aktualnego użytkownika jako właściciela
-            });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-            navigate("/my-properties");
-        } catch {
-            setError("Błąd dodawania ogłoszenia.");
-        }
-    };
+    try {
+      await createProperty({
+        title: form.title,
+        description: form.description,
+        address: form.address,
+        area: Number(form.area),
+        district: form.district,
+        roomCount: Number(form.roomCount),
+        city: form.city,
+        postalCode: form.postalCode,
+        basePrice: Number(form.basePrice),
+        baseDeposit: Number(form.baseDeposit),
+      });
 
-    return (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow max-w-lg mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Dodaj nowe mieszkanie</h2>
-            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+      navigate("/properties");
+    } catch (err) {
+      console.error("Błąd przy dodawaniu mieszkania:", err);
+    }
+  };
 
-            <input name="title" value={form.title} onChange={handleChange} placeholder="Tytuł" required className="w-full border p-2 mb-4 rounded" />
-            <textarea name="description" value={form.description} onChange={handleChange} placeholder="Opis" required className="w-full border p-2 mb-4 rounded" />
-            <input name="location" value={form.location} onChange={handleChange} placeholder="Lokalizacja" required className="w-full border p-2 mb-4 rounded" />
-            <input name="price" type="number" value={form.price} onChange={handleChange} placeholder="Cena (zł)" required className="w-full border p-2 mb-4 rounded" />
-            <input name="imageUrl" value={form.imageUrl} onChange={handleChange} placeholder="Link do zdjęcia" className="w-full border p-2 mb-4 rounded" />
+  return (
+    <div className="max-w-4xl mx-auto p-6 rounded-xl shadow-md mt-6">
+      <h2 className="text-2xl font-bold mb-4">Dodaj nowe mieszkanie</h2>
 
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-                Dodaj mieszkanie
-            </button>
-        </form>
-    );
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        <div className="md:col-span-2">
+          <label className="block mb-1">Tytuł ogłoszenia:</label>
+          <input
+            type="text"
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block mb-1">Opis:</label>
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            className="border p-2 rounded w-full min-h-[100px]"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Miasto:</label>
+          <select
+            name="city"
+            value={form.city}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          >
+            <option value="" className="text-black">
+              -- Wybierz miasto --
+            </option>
+            {cities.map((c) => (
+              <option key={c.id} value={c.id} className="text-black">
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block mb-1">Dzielnica:</label>
+          <select
+            name="district"
+            value={form.district}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            disabled={!form.city}
+            required
+          >
+            <option value="" className="text-black">
+              -- Wybierz dzielnicę --
+            </option>
+            {districts.map((d) => (
+              <option key={d.id} value={d.enumName} className="text-black">
+                {d.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block mb-1">Adres:</label>
+          <input
+            type="text"
+            name="address"
+            value={form.address}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Kod pocztowy:</label>
+          <input
+            type="text"
+            name="postalCode"
+            value={form.postalCode}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Powierzchnia (m²):</label>
+          <input
+            type="number"
+            name="area"
+            value={form.area}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Liczba pokoi:</label>
+          <input
+            type="number"
+            name="roomCount"
+            value={form.roomCount}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Cena/miesiąc (zł):</label>
+          <input
+            type="number"
+            name="basePrice"
+            value={form.basePrice}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+        <div>
+          <label className="block mb-1">Kaucja (zł):</label>
+          <input
+            type="number"
+            name="baseDeposit"
+            value={form.baseDeposit}
+            onChange={handleChange}
+            className="border p-2 rounded w-full"
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2 flex justify-end gap-3">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Dodaj mieszkanie
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 };
 
-export default AddPropertyPage;
+export default AddPropertyForm;
