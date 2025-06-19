@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   getAllProperties,
-  searchProperties,
+  filter,
   getCities,
   getDistricts,
 } from "../api/property";
@@ -46,7 +46,7 @@ const PropertiesPage = () => {
     try {
       let data;
       if (filters && Object.keys(filters).length > 0) {
-        data = await searchProperties(filters);
+        data = await filter(filters);
       } else {
         data = await getAllProperties();
       }

@@ -68,6 +68,7 @@ const AddPropertyForm = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 rounded-xl shadow-md mt-6">
       <h2 className="text-2xl font-bold mb-4">Dodaj nowe mieszkanie</h2>
+
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -177,7 +178,7 @@ const AddPropertyForm = () => {
           />
         </div>
         <div>
-          <label className="block mb-1">Cena bazowa (zł):</label>
+          <label className="block mb-1">Cena/miesiąc (zł):</label>
           <input
             type="number"
             name="basePrice"

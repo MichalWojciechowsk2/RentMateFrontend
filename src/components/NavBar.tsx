@@ -1,8 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
-import React from "react";
+import React, { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    console.log(`Current user:`, user);
+  }, [user]);
 
   const linkClass = (path: string) =>
     pathname === path
@@ -15,25 +21,24 @@ const NavBar: React.FC = () => {
         RentMate
       </Link>
       <div className="flex gap-6 text-lg">
-        <Link to="/" className={linkClass("/")}>
-          Home
-        </Link>
         <Link to="/properties" className={linkClass("/properties")}>
           Oferty
         </Link>
-        <Link to="/dashboard" className={linkClass("/dashboard")}>
-          Panel
-        </Link>
-        <Link to="/login" className={linkClass("/login")}>
-          Logowanie
-        </Link>
-        <Link to="/register" className={linkClass("/register")}>
-          Rejestracja
-        </Link>
+        {!user && (
+          <Link to="/login" className={linkClass("/login")}>
+            Logowanie
+          </Link>
+        )}
+        {!user && (
+          <Link to="/register" className={linkClass("/register")}>
+            Rejestracja
+          </Link>
+        )}
         <Link to="/add-property" className={linkClass("/add-property")}>
           Dodaj ogłoszenie
         </Link>
-        <Link to="/my-properties">Moje mieszkania</Link>
+        {user && <Link to="/my-properties">Moje mieszkania</Link>}
+        {user && <Link to="/dashboard"> Hello {user.email}</Link>}
       </div>
     </nav>
   );

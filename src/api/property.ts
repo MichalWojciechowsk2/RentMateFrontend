@@ -5,14 +5,18 @@ export const getAllProperties = async (): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property");
   return response.data;
 };
+export const GetPropertyById = async (id: number): Promise<Property> => {
+  const response = await api.get<Property>(`Property/getPropertyById?id=${id}`);
+  return response.data;
+};
 export const createProperty = async (
   property: CreateProperty
 ): Promise<void> => {
   await api.post("/Property", property);
 };
 
-export const searchProperties = async (filters: any): Promise<Property[]> => {
-  const response = await api.get<Property[]>("/Property/search", {
+export const filter = async (filters: any): Promise<Property[]> => {
+  const response = await api.get<Property[]>("/Property/filter", {
     params: filters,
   });
   console.log(filters);
