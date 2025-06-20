@@ -1,5 +1,6 @@
 export type Property = {
   id: number;
+  ownerId: number;
   title: string;
   description: string;
   address: string;
