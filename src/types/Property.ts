@@ -14,6 +14,7 @@ export type Property = {
 };
 
 export type CreateProperty = {
+  // ownerId: string;
   title: string;
   description: string;
   address: string;
@@ -24,4 +25,5 @@ export type CreateProperty = {
   postalCode: string;
   basePrice: number;
   baseDeposit: number;
+  // ownerUsername: string;
 };
