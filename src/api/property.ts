@@ -9,10 +9,27 @@ export const GetPropertyById = async (id: number): Promise<Property> => {
   const response = await api.get<Property>(`Property/getPropertyById?id=${id}`);
   return response.data;
 };
+
+export const GetPropertiesByOwnerId = async (
+  ownerId: number
+): Promise<Property[]> => {
+  const response = await api.get<Property[]>(
+    `Property/getPropertiesByOwnerId?ownerId=${ownerId}`
+  );
+  return response.data;
+};
+
 export const createProperty = async (
   property: CreateProperty
 ): Promise<void> => {
-  await api.post("/Property", property);
+  const token = localStorage.getItem("token");
+  console.log(`Property ${JSON.stringify(property, null, 2)}`);
+  console.log(`Token: ${token}`);
+  await api.post("/Property", property, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
 
 export const filter = async (filters: any): Promise<Property[]> => {
@@ -36,6 +53,5 @@ export const getDistricts = async (
   const response = await api.get<
     { id: number; name: string; enumName: string }[]
   >(`/Property/districts/${cityId}`);
-  console.log(response.data);
   return response.data;
 };

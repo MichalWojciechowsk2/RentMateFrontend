@@ -1,6 +1,6 @@
 import { data, Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { GetPropertyById } from "../api/property";
+import { GetPropertyById, GetPropertiesByOwnerId } from "../api/property";
 import { getUserById } from "../api/users";
 import type { Property } from "../types/Property";
 import type { User } from "../types/User";
@@ -10,7 +10,9 @@ const PropertyDetailPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
   const [propertyOwner, setPropertyOwner] = useState<User | null>(null);
-  const [ownerNumberActive, setOwnerNumberActive] = useState<Boolean>(false);
+  const [ownerNumberActive, setOwnerNumberActive] = useState(false);
+  const [propertyOwnerOtherProperties, setPropertyOwnerOtherProperties] =
+    useState<Property[] | null>(null);
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -25,27 +27,45 @@ const PropertyDetailPage = () => {
       setLoading(false);
     }
   };
+  const fetchOwnerOtherProperties = async (ownerId?: number) => {
+    if (ownerId === undefined) return;
+    setLoading(true);
+    try {
+      console.log("OwnerId: ", ownerId);
+      let data = await GetPropertiesByOwnerId(ownerId);
+      setPropertyOwnerOtherProperties(data);
+    } catch (err) {
+      console.error("Błąd przy wczytywaniu innych ofert wynajmującego: ", err);
+    } finally {
+      setLoading(false);
+    }
+  };
   const fetchUser = async (ownerId: number) => {
     setLoading(true);
     try {
       let data = await getUserById(ownerId);
       setPropertyOwner(data);
+      fetchOwnerOtherProperties(ownerId);
     } catch (err) {
       console.error("Błąd wczytywania właściciela", err);
     } finally {
       setLoading(false);
-      console.log("Property owner: ", propertyOwner);
     }
   };
 
   useEffect(() => {
-    fetchProperty(Number(id));
+    if (id) fetchProperty(Number(id));
   }, [id]);
   useEffect(() => {
-    if (property?.ownerId) {
-      fetchUser(property.ownerId);
-    }
-  }, [property]);
+    if (property?.ownerId) fetchUser(property.ownerId);
+  }, [property?.ownerId]);
+  useEffect(() => {
+    console.log("Property owner: ", propertyOwner);
+    console.log(
+      "Zaktualizowane oferty właściciela:",
+      propertyOwnerOtherProperties
+    );
+  }, [propertyOwnerOtherProperties]);
 
   if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
 
@@ -56,7 +76,7 @@ const PropertyDetailPage = () => {
           {property?.title}
         </h1>
       </div>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 animate-fade-in">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 animate-fade-in mb-30">
         <div className="lg:col-span-2 space-y-10">
           <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
             <p className="text-gray-600 text-xl font-medium">
@@ -138,6 +158,41 @@ const PropertyDetailPage = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="text-black">
+        Inne oferty od {propertyOwner?.firstName} {propertyOwner?.lastName}
+      </div>
+      <div>
+        {propertyOwnerOtherProperties
+          ?.filter((p) => property && p.id !== property.id)
+          .map((p) => (
+            <li key={p.id}>
+              <Link to={`/property/${p.id}`}>
+                <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
+                  {/* Placeholder na zdjęcie */}
+                  <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
+                    Zdj
+                  </div>
+
+                  {/* Szczegóły */}
+                  <div className="flex flex-col justify-between p-4 w-full">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                      {p.title}
+                    </h2>
+                    <p className="text-gray-600 mb-1 line-clamp-2">
+                      {p.description}
+                    </p>
+                    <p className="text-sm text-gray-500">📍 {p.address}</p>
+                    <div className="flex justify-between mt-2 text-sm text-gray-700">
+                      <span>🛏️ {p.roomCount} pokoi</span>
+                      <span>💰 {p.basePrice} zł/mc</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </li>
+          ))}
       </div>
     </div>
   );

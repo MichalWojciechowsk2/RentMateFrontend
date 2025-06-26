@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { createProperty, getCities, getDistricts } from "../api/property";
 import type { City, District } from "../types/Location";
+import { CITY_ID_TO_ENUM } from "../types/Location";
 import { useNavigate } from "react-router-dom";
 
 const AddPropertyForm = () => {
@@ -47,16 +48,16 @@ const AddPropertyForm = () => {
 
     try {
       await createProperty({
-        title: form.title,
-        description: form.description,
-        address: form.address,
-        area: Number(form.area),
+        title: form.title.trim(),
+        description: form.description.trim(),
+        address: form.address.trim(),
+        area: parseFloat(form.area),
         district: form.district,
-        roomCount: Number(form.roomCount),
-        city: form.city,
-        postalCode: form.postalCode,
-        basePrice: Number(form.basePrice),
-        baseDeposit: Number(form.baseDeposit),
+        roomCount: parseInt(form.roomCount),
+        city: CITY_ID_TO_ENUM[Number(form.city)],
+        postalCode: form.postalCode.trim(),
+        basePrice: parseFloat(form.basePrice),
+        baseDeposit: parseFloat(form.baseDeposit),
       });
 
       navigate("/properties");
@@ -149,6 +150,7 @@ const AddPropertyForm = () => {
           <input
             type="text"
             name="postalCode"
+            pattern="\d{2}-\d{3}"
             value={form.postalCode}
             onChange={handleChange}
             className="border p-2 rounded w-full"
