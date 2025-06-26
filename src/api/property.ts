@@ -9,6 +9,16 @@ export const GetPropertyById = async (id: number): Promise<Property> => {
   const response = await api.get<Property>(`Property/getPropertyById?id=${id}`);
   return response.data;
 };
+
+export const GetPropertiesByOwnerId = async (
+  ownerId: number
+): Promise<Property[]> => {
+  const response = await api.get<Property[]>(
+    `Property/getPropertiesByOwnerId?ownerId=${ownerId}`
+  );
+  return response.data;
+};
+
 export const createProperty = async (
   property: CreateProperty
 ): Promise<void> => {

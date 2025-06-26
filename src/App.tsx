@@ -10,6 +10,7 @@ import MyPropertiesPage from "./pages/MyPropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
 import EditPropertyPage from "./pages/EditPropertyPage";
 import RegisterPage from "./pages/RegisterPage";
+import MyRentalPage from "./pages/MyRentalPage";
 
 const App = () => {
   return (
@@ -19,19 +20,40 @@ const App = () => {
         <Route path="register" element={<RegisterPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="properties" element={<PropertiesPage />} />
-        <Route path="/my-properties" element={<PrivateRoute><MyPropertiesPage /></PrivateRoute>} />
+        <Route
+          path="/my-properties"
+          element={
+            <PrivateRoute>
+              <MyPropertiesPage />
+            </PrivateRoute>
+          }
+        />
         <Route path="/edit-property/:id" element={<EditPropertyPage />} />
         <Route path="/property/:id" element={<PropertyDetailPage />} />
-        <Route path="add-property" element={
-          <PrivateRoute>
-            <AddPropertyPage />
-          </PrivateRoute>
-        } />
-        <Route path="dashboard" element={
-          <PrivateRoute>
-            <DashboardPage />
-          </PrivateRoute>
-        } />
+        <Route
+          path="add-property"
+          element={
+            <PrivateRoute>
+              <AddPropertyPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="dashboard"
+          element={
+            <PrivateRoute>
+              <DashboardPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="my-rental"
+          element={
+            <PrivateRoute>
+              <MyRentalPage />
+            </PrivateRoute>
+          }
+        />
       </Route>
     </Routes>
   );
