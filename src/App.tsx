@@ -11,6 +11,7 @@ import PropertyDetailPage from "./pages/PropertyDetailPage";
 import EditPropertyPage from "./pages/EditPropertyPage";
 import RegisterPage from "./pages/RegisterPage";
 import MyRentalPage from "./pages/MyRentalPage";
+import MenagePropertyPage from "./pages/MenagePropertyPage";
 
 const App = () => {
   return (
@@ -28,6 +29,15 @@ const App = () => {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/my-properties/:id/menage"
+          element={
+            <PrivateRoute>
+              <MenagePropertyPage />
+            </PrivateRoute>
+          }
+        />
+
         <Route path="/edit-property/:id" element={<EditPropertyPage />} />
         <Route path="/property/:id" element={<PropertyDetailPage />} />
         <Route

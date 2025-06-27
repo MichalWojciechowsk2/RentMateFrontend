@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
-  const { user } = useAuth();
+  const { currentUser: user } = useAuth();
 
   useEffect(() => {
     console.log(`Current user:`, user);

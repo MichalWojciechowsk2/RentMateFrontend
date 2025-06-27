@@ -22,21 +22,13 @@ export const GetPropertiesByOwnerId = async (
 export const createProperty = async (
   property: CreateProperty
 ): Promise<void> => {
-  const token = localStorage.getItem("token");
-  console.log(`Property ${JSON.stringify(property, null, 2)}`);
-  console.log(`Token: ${token}`);
-  await api.post("/Property", property, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await api.post("/Property", property);
 };
 
 export const filter = async (filters: any): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property/filter", {
     params: filters,
   });
-  console.log(filters);
   return response.data;
 };
 

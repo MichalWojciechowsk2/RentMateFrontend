@@ -1,42 +1,53 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { PropertyService } from "../services/PropertyService";
 import type { Property } from "../types/Property";
+import { GetPropertiesByOwnerId } from "../api/property";
+import { Link } from "react-router-dom";
 
 const MyPropertiesPage = () => {
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    if (user) {
-      PropertyService.getByOwner(user.id).then(setProperties);
+    if (currentUser?.id) {
+      GetPropertiesByOwnerId(currentUser.id)
+        .then(setProperties)
+        .catch((err) => {
+          console.error("Błąd pobierania nieruchomości: ", err);
+        });
     }
-  }, [user]);
-
-  const handleDelete = async (id: number) => {
-    await PropertyService.delete(id);
-    const updated = await PropertyService.getByOwner(user!.id);
-    setProperties(updated);
-  };
+  }, [currentUser]);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Moje mieszkania</h1>
-      {properties.map((p) => (
-        <div key={p.id} className="border rounded p-4 mb-4 bg-white shadow">
-          <h2 className="text-xl font-semibold">{p.title}</h2>
-          <p>{p.location}</p>
-          <p>{p.description}</p>
-          <p className="font-bold">{p.price} zł / miesiąc</p>
-          <button
-            onClick={() => handleDelete(p.id)}
-            className="mt-2 text-sm bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-          >
-            Usuń
-          </button>
-        </div>
+    <ul>
+      {properties.map((property) => (
+        <li key={property.id}>
+          <Link to={`/my-properties/${property.id}/menage`}>
+            <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
+              {/* Placeholder na zdjęcie */}
+              <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
+                Zdj
+              </div>
+
+              {/* Szczegóły */}
+              <div className="flex flex-col justify-between p-4 w-full">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                  {property.title}
+                </h2>
+                <p className="text-gray-600 mb-1 line-clamp-2">
+                  {property.description}
+                </p>
+                <p className="text-sm text-gray-500">📍 {property.address}</p>
+                <div className="flex justify-between mt-2 text-sm text-gray-700">
+                  <span>🛏️ {property.roomCount} pokoi</span>
+                  <span>💰 {property.basePrice} zł/mc</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
 
