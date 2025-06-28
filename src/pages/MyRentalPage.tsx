@@ -1,14 +1,15 @@
 import * as Tabs from "@radix-ui/react-tabs";
+import MyOfferComponent from "../components/my-rental/MyOfferComponent.tsx";
+import { useAuth } from "../context/AuthContext.tsx";
+import { useParams } from "react-router-dom";
 
 const tabs = [
-  { value: "umowa", label: "Umowa" },
-  { value: "harmonogram", label: "Harmonogram" },
-  { value: "kalendarz", label: "Kalendarz" },
-  { value: "usterki", label: "Usterki" },
-  { value: "historia", label: "Historia" },
+  { value: "oferta", label: "oferta" },
+  { value: "test", label: "test" },
 ];
 
 export default function MyRentalPage() {
+  const { currentUser: user } = useAuth();
   return (
     <div className="p-6">
       <Tabs.Root className="w-full">
@@ -44,16 +45,10 @@ export default function MyRentalPage() {
           ))}
         </Tabs.List>
 
-        <div className="bg-gray-50 p-4">
-          {tabs.map(({ value, label }) => (
-            <Tabs.Content
-              key={value}
-              value={value}
-              className="outline-none text-black"
-            >
-              <div>Treść zakładki {label}</div>
-            </Tabs.Content>
-          ))}
+        <div className="bg-[#F1F5F9]">
+          <Tabs.Content value="oferta">
+            <MyOfferComponent currentUserId={user?.id} />
+          </Tabs.Content>
         </div>
       </Tabs.Root>
     </div>
