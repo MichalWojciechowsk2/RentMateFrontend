@@ -5,7 +5,7 @@ import {
   getValidOffersByPropertyId,
 } from "../../api/offer";
 import type { Property } from "../../types/Property";
-import type { Offer, CreateOffer } from "../../types/Offer";
+import { type Offer, type CreateOffer, OfferStatus } from "../../types/Offer";
 import CreateOfferFormComponent from "../my-properties/CreateOfferFormComponent";
 
 type OfferComponentProps = {
@@ -63,24 +63,45 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
         />
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+          <div className="gap-4 mb-6">
             {property &&
               Array.from({ length: property.roomCount }).map((_, index) => {
                 const offer = offers[index];
-                return (
-                  <div
-                    key={index}
-                    className={`p-4 rounded-lg text-center font-medium ${
-                      offer
-                        ? "bg-green-300 text-white"
-                        : "bg-gray-300 text-gray-700"
-                    }`}
-                  >
-                    {offer
-                      ? `Zajęte (ID: ${offer.tenantId ?? "brak"})`
-                      : "Wolne miejsce"}
-                  </div>
-                );
+
+                if (!offer) {
+                  return (
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg text-center font-medium bg-gray-300 text-gray-700 mb-2"
+                    >
+                      Wolne miejsce
+                    </div>
+                  );
+                }
+
+                if (offer.status === OfferStatus.Active) {
+                  return (
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg text-center font-medium bg-[#6690e4] text-white mb-2"
+                    >
+                      Oczekująca na akcje najemcy (ID:{" "}
+                      {offer.tenantId ?? "brak"})
+                    </div>
+                  );
+                }
+
+                if (offer.status === OfferStatus.Accepted) {
+                  return (
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg text-center font-medium bg-[#1b2947] text-white mb-2"
+                    >
+                      Zweryfikowana (ID: {offer.tenantId ?? "brak"})
+                    </div>
+                  );
+                }
+                return null;
               })}
           </div>
           {errorMessage && (
