@@ -13,9 +13,9 @@ export type Property = {
   baseDeposit: number;
   isActive: boolean;
 };
-
-export type CreateProperty = {
-  // ownerId: string;
+export type PropertyEntity = {
+  id: number;
+  ownerId: number;
   title: string;
   description: string;
   address: string;
@@ -26,5 +26,20 @@ export type CreateProperty = {
   postalCode: string;
   basePrice: number;
   baseDeposit: number;
-  // ownerUsername: string;
+  isActive: boolean;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+};
+
+export type CreateProperty = {
+  title: string;
+  description: string;
+  address: string;
+  area: number;
+  district: string;
+  roomCount: number;
+  city: string;
+  postalCode: string;
+  basePrice: number;
+  baseDeposit: number;
 };

@@ -13,7 +13,7 @@ const tabs = [
 ];
 
 const MenagePropertyPage = () => {
-  const [laoding, setLoading] = useState(Boolean);
+  const [loading, setLoading] = useState(Boolean);
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
 
@@ -35,7 +35,7 @@ const MenagePropertyPage = () => {
     if (id) fetchProperty(Number(id));
   }, [id]);
 
-  if (laoding) return <p className="p-6">Ładowanie twojego mieszkania...</p>;
+  if (loading) return <p className="p-6">Ładowanie twojego mieszkania...</p>;
 
   return (
     <div className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl">
@@ -80,7 +80,7 @@ const MenagePropertyPage = () => {
 
           <div className="bg-[#F1F5F9]">
             <Tabs.Content value="property">
-              <PropertyComponent />
+              <PropertyComponent onRefetch={() => fetchProperty(Number(id))} />
             </Tabs.Content>
             <Tabs.Content value="offer">
               <OfferComponent propertyId={Number(id)} />

@@ -1,19 +1,33 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { GetPropertyById, UpdateIsActive } from "../../api/property";
-import type { Property } from "../../types/Property";
+import {
+  UpdateIsActive,
+  GetPropertyEntityById,
+  UpdateProperty,
+} from "../../api/property";
+import type {
+  PropertyEntity,
+  CreateProperty,
+  Property,
+} from "../../types/Property";
+import EditPropertyForm from "../Property/EditPropertyForm";
 
-const PropertyComponent = () => {
+type Props = {
+  onRefetch: () => void;
+};
+
+const PropertyComponent = ({ onRefetch }: Props) => {
   const [laoding, setLoading] = useState(Boolean);
   const { id } = useParams();
-  const [property, setProperty] = useState<Property | null>(null);
+  const [property, setProperty] = useState<PropertyEntity | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
     setLoading(true);
     try {
       let data;
-      data = await GetPropertyById(id);
+      data = await GetPropertyEntityById(id);
       setProperty(data);
     } catch (err) {
       console.error("Błąd wczytywania oferty", err);
@@ -37,16 +51,46 @@ const PropertyComponent = () => {
     if (id) await changeIsActive(Number(id), false);
   };
 
+  const handleSave = async (updatedProperty: CreateProperty) => {
+    if (!property) return;
+    try {
+      setLoading(true);
+      await UpdateProperty(property.id, updatedProperty);
+      const refreshed = await GetPropertyEntityById(property.id);
+      setProperty(refreshed);
+      await onRefetch();
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Błąd zapisu zmian mieszkania", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
   useEffect(() => {
     if (id) fetchProperty(Number(id));
   }, [id]);
 
   if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
 
+  if (isEditing && property) {
+    return (
+      <EditPropertyForm
+        property={property}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      />
+    );
+  }
+
   return (
     <div className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl">
       {property?.isActive ? (
-        <div className="flex text-gray-900 justify-between items-center p-3 mb-4 border border-blue-300 rounded-xl bg-blue-100 shadow-sm">
+        <div className="flex text-gray-900 justify-between items-center p-3 mb-6 border border-blue-300 rounded-xl bg-blue-100 shadow-sm">
           <span className="font-medium">
             Twoje ogłoszenie jest opublikowane
           </span>
@@ -58,21 +102,21 @@ const PropertyComponent = () => {
           </button>
         </div>
       ) : (
-        <div className="flex text-gray-900 justify-between items-center p-3 mb-4 border border-blue-300 rounded-xl bg-blue-100 shadow-sm">
+        <div className="flex text-gray-900 justify-between items-center p-3 mb-6 border border-orange-300 rounded-xl bg-orange-100 shadow-sm">
           <span className="font-medium">
             Twoje ogłoszenie nie jest opublikowane
           </span>
           <button
             onClick={publishProperty}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1 rounded-lg transition"
           >
             Opublikuj
           </button>
         </div>
       )}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 animate-fade-in mb-30">
-        <div className="lg:col-span-2 space-y-10">
-          <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
+      <div className="max-w-7xl mx-auto gap-12 animate-fade-in mb-30">
+        <div className="lg:col-span-2 space-y-10 mb-20">
+          <div className="bg-gray-300 w-[75%] aspect-video flex items-center justify-center rounded-lg mx-auto">
             <p className="text-gray-600 text-xl font-medium">
               Miejsce na zdjęcie
             </p>
@@ -107,6 +151,28 @@ const PropertyComponent = () => {
               <p>{property?.basePrice} zł</p>
             </div>
           </div>
+        </div>
+        <div>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition h-12"
+            onClick={() => {
+              setIsEditing(true);
+            }}
+          >
+            Edytuj ogłoszenie
+          </button>
+          {property?.UpdatedAt && (
+            <div className="text-gray-700 mb-2">
+              Ostatnio modyfikowane:{" "}
+              {new Date(property.UpdatedAt).toLocaleDateString("pl-PL", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

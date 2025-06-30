@@ -136,7 +136,7 @@ const AddPropertyForm = () => {
           </select>
         </div>
         <div>
-          <label className="block mb-1">Adres:</label>
+          <label className="block mb-1">Ulica i numer mieszkania:</label>
           <input
             type="text"
             name="address"
