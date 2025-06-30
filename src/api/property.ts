@@ -1,12 +1,23 @@
 import api from "./axiosInstance";
 import type { Property, CreateProperty } from "../types/Property";
 
-export const getAllProperties = async (): Promise<Property[]> => {
+export const getAllActiveProperties = async (): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property");
   return response.data;
 };
 export const GetPropertyById = async (id: number): Promise<Property> => {
   const response = await api.get<Property>(`Property/getPropertyById?id=${id}`);
+  return response.data;
+};
+
+export const UpdateIsActive = async (
+  propertyId: number,
+  newIsActive: boolean
+): Promise<Property> => {
+  const response = await api.patch<Property>(
+    `Property/${propertyId}/isActive`,
+    newIsActive
+  );
   return response.data;
 };
 

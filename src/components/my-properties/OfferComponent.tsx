@@ -63,6 +63,7 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
         />
       ) : (
         <>
+          <div></div>
           <div className="gap-4 mb-6">
             {property &&
               Array.from({ length: property.roomCount }).map((_, index) => {

@@ -11,6 +11,7 @@ export type Property = {
   postalCode: string;
   basePrice: number;
   baseDeposit: number;
+  isActive: boolean;
 };
 
 export type CreateProperty = {

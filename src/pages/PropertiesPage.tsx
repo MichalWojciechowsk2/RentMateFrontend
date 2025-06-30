@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  getAllProperties,
+  getAllActiveProperties,
   filter,
   getCities,
   getDistricts,
@@ -48,7 +48,7 @@ const PropertiesPage = () => {
       if (filters && Object.keys(filters).length > 0) {
         data = await filter(filters);
       } else {
-        data = await getAllProperties();
+        data = await getAllActiveProperties();
       }
       setProperties(data);
     } catch (err) {
