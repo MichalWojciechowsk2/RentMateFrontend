@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { GetPropertyById, GetPropertiesByOwnerId } from "../../api/property";
+import { GetPropertyById, UpdateIsActive } from "../../api/property";
 import type { Property } from "../../types/Property";
 
 const PropertyComponent = () => {
@@ -22,6 +22,21 @@ const PropertyComponent = () => {
     }
   };
 
+  const changeIsActive = async (propertyId: number, isActive: boolean) => {
+    try {
+      await UpdateIsActive(propertyId, isActive);
+      await fetchProperty(propertyId);
+    } catch (err) {
+      console.error("Błąd aktualizacji aktywności mieszkania", err);
+    }
+  };
+  const publishProperty = async () => {
+    if (id) await changeIsActive(Number(id), true);
+  };
+  const unpublishProperty = async () => {
+    if (id) await changeIsActive(Number(id), false);
+  };
+
   useEffect(() => {
     if (id) fetchProperty(Number(id));
   }, [id]);
@@ -30,6 +45,31 @@ const PropertyComponent = () => {
 
   return (
     <div className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl">
+      {property?.isActive ? (
+        <div className="flex text-gray-900 justify-between items-center p-3 mb-4 border border-blue-300 rounded-xl bg-blue-100 shadow-sm">
+          <span className="font-medium">
+            Twoje ogłoszenie jest opublikowane
+          </span>
+          <button
+            onClick={unpublishProperty}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition"
+          >
+            Ukryj ogłoszenie
+          </button>
+        </div>
+      ) : (
+        <div className="flex text-gray-900 justify-between items-center p-3 mb-4 border border-blue-300 rounded-xl bg-blue-100 shadow-sm">
+          <span className="font-medium">
+            Twoje ogłoszenie nie jest opublikowane
+          </span>
+          <button
+            onClick={publishProperty}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition"
+          >
+            Opublikuj
+          </button>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 animate-fade-in mb-30">
         <div className="lg:col-span-2 space-y-10">
           <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">

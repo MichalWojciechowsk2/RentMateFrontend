@@ -16,6 +16,7 @@ const AddPropertyForm = () => {
     postalCode: "",
     basePrice: "",
     baseDeposit: "",
+    isActive: 1,
   });
 
   const [cities, setCities] = useState<City[]>([]);
