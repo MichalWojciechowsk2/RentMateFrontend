@@ -27,8 +27,8 @@ export type PropertyEntity = {
   basePrice: number;
   baseDeposit: number;
   isActive: boolean;
-  CreatedAt: Date;
-  UpdatedAt: Date;
+  createdAt: string;
+  updatedAt: string | null;
 };
 
 export type CreateProperty = {

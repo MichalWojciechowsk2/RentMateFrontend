@@ -75,6 +75,9 @@ const PropertyComponent = ({ onRefetch }: Props) => {
     if (id) fetchProperty(Number(id));
   }, [id]);
 
+  console.log("property.title: ", property?.title);
+  console.log("property.UpdatedAt: ", property?.updatedAt);
+
   if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
 
   if (isEditing && property) {
@@ -154,17 +157,17 @@ const PropertyComponent = ({ onRefetch }: Props) => {
         </div>
         <div>
           <button
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition h-12"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition h-12 mb-2"
             onClick={() => {
               setIsEditing(true);
             }}
           >
             Edytuj ogłoszenie
           </button>
-          {property?.UpdatedAt && (
-            <div className="text-gray-700 mb-2">
+          {property?.updatedAt && (
+            <div className="text-gray-700">
               Ostatnio modyfikowane:{" "}
-              {new Date(property.UpdatedAt).toLocaleDateString("pl-PL", {
+              {new Date(property.updatedAt).toLocaleDateString("pl-PL", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -173,6 +176,19 @@ const PropertyComponent = ({ onRefetch }: Props) => {
               })}
             </div>
           )}
+        </div>
+        <div className="text-black mt-10">
+          <div>
+            Licznik wejść na oferte (jeśli zostanie opublikowana ponownie to
+            wtedy się zeruje) (od ostatniej publikacji)
+          </div>
+          <div>
+            Komentarze (Których właściciel nie może usunąć ale może skontaktować
+            się z osobą która ten komentarz napisała)
+          </div>
+          <div>
+            Przycisk do łatwego udostępniania (np w mediach społecznościowych)
+          </div>
         </div>
       </div>
     </div>
