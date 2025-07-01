@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import { GetPropertyById } from "../api/property";
 import type { Property } from "../types/Property";
 import * as Tabs from "@radix-ui/react-tabs";
-import PropertyComponent from "../components/my-properties/PropertyComponent";
-import OfferComponent from "../components/my-properties/OfferComponent";
+import PropertyComponent from "../components/my-properties/Property/PropertyComponent";
+import OfferComponent from "../components/my-properties/Offer/OfferComponent";
 
 const tabs = [
   { value: "property", label: "Mieszkanie" },
   { value: "offer", label: "Umowy wynajmu" },
-  { value: "test", label: "test" },
+  { value: "bills", label: "Rachunki" },
 ];
 
 const MenagePropertyPage = () => {
-  const [laoding, setLoading] = useState(Boolean);
+  const [loading, setLoading] = useState(Boolean);
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
 
@@ -35,7 +35,7 @@ const MenagePropertyPage = () => {
     if (id) fetchProperty(Number(id));
   }, [id]);
 
-  if (laoding) return <p className="p-6">Ładowanie twojego mieszkania...</p>;
+  if (loading) return <p className="p-6">Ładowanie twojego mieszkania...</p>;
 
   return (
     <div className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl">
@@ -80,7 +80,7 @@ const MenagePropertyPage = () => {
 
           <div className="bg-[#F1F5F9]">
             <Tabs.Content value="property">
-              <PropertyComponent />
+              <PropertyComponent onRefetch={() => fetchProperty(Number(id))} />
             </Tabs.Content>
             <Tabs.Content value="offer">
               <OfferComponent propertyId={Number(id)} />

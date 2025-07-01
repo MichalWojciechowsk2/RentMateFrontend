@@ -9,6 +9,10 @@ export type Offer = {
   tenantId: number;
   createdAt: Date;
   acceptedAt: Date;
+  tenantEmail: string;
+  tenantName: string;
+  tenantLastName: string;
+  tenantPhoneNumber: string;
 };
 
 export type CreateOffer = {
