@@ -4,13 +4,13 @@ import {
   UpdateIsActive,
   GetPropertyEntityById,
   UpdateProperty,
-} from "../../api/property";
+} from "../../../api/property";
 import type {
   PropertyEntity,
   CreateProperty,
   Property,
-} from "../../types/Property";
-import EditPropertyForm from "../Property/EditPropertyForm";
+} from "../../../types/Property";
+import EditPropertyForm from "./EditPropertyForm";
 
 type Props = {
   onRefetch: () => void;

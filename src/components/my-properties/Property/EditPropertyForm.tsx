@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import type { CreateProperty, PropertyEntity } from "../../types/Property";
-import PropertyDetailPage from "../../pages/PropertyDetailPage";
+import type { CreateProperty, PropertyEntity } from "../../../types/Property";
+import PropertyDetailPage from "../../../pages/PropertyDetailPage";
 
 type Props = {
   property: CreateProperty;

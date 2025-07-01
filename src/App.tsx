@@ -8,7 +8,7 @@ import AddPropertyPage from "./pages/AddPropertyPage";
 import HomePage from "./pages/HomePage";
 import MyPropertiesPage from "./pages/MyPropertiesPage";
 import PropertyDetailPage from "./pages/PropertyDetailPage";
-import EditPropertyPage from "./pages/EditPropertyPage";
+// import EditPropertyPage from "./EditPropertyPage";
 import RegisterPage from "./pages/RegisterPage";
 import MyRentalPage from "./pages/MyRentalPage";
 import MenagePropertyPage from "./pages/MenagePropertyPage";
@@ -38,7 +38,7 @@ const App = () => {
           }
         />
 
-        <Route path="/edit-property/:id" element={<EditPropertyPage />} />
+        {/* <Route path="/edit-property/:id" element={<EditPropertyPage />} /> */}
         <Route path="/property/:id" element={<PropertyDetailPage />} />
         <Route
           path="add-property"

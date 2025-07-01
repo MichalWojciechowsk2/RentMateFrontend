@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { GetPropertyById } from "../api/property";
 import type { Property } from "../types/Property";
 import * as Tabs from "@radix-ui/react-tabs";
-import PropertyComponent from "../components/my-properties/PropertyComponent";
-import OfferComponent from "../components/my-properties/OfferComponent";
+import PropertyComponent from "../components/my-properties/Property/PropertyComponent";
+import OfferComponent from "../components/my-properties/Offer/OfferComponent";
 
 const tabs = [
   { value: "property", label: "Mieszkanie" },
   { value: "offer", label: "Umowy wynajmu" },
-  { value: "test", label: "test" },
+  { value: "bills", label: "Rachunki" },
 ];
 
 const MenagePropertyPage = () => {
