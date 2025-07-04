@@ -38,7 +38,7 @@ const EditPropertyForm = ({ property, onSave, onCancel }: Props) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl max-w-7xl"
+      className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl max-w-7xl mt-22"
     >
       <div className="space-y-10 mb-20">
         <div className="bg-gray-300 w-[75%] aspect-video flex items-center justify-center rounded-lg mx-auto">
