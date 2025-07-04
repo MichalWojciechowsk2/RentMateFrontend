@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { CreateOffer } from "../../types/Offer";
+import type { CreateOffer } from "../../../types/Offer";
 
 type CreateOfferFormProps = {
   onCancel: () => void;
