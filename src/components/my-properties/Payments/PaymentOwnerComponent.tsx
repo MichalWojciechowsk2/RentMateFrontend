@@ -8,7 +8,6 @@
 
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import CreatePaymentFormComponent from "../Payments/CreatePaymentFormComponent";
 import { createPayment } from "../../../api/payment";
 
