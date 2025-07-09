@@ -1,11 +1,12 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import MyOfferComponent from "../components/my-rental/MyOfferComponent.tsx";
+import PaymentTenantComponent from "../components/my-rental/Payments/PaymentTenantComponent.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
 import { useParams } from "react-router-dom";
 
 const tabs = [
   { value: "oferta", label: "oferta" },
-  { value: "test", label: "test" },
+  { value: "rachunki", label: "rachunki" },
 ];
 
 export default function MyRentalPage() {
@@ -48,6 +49,9 @@ export default function MyRentalPage() {
         <div className="bg-[#F1F5F9]">
           <Tabs.Content value="oferta">
             <MyOfferComponent currentUserId={user?.id} />
+          </Tabs.Content>
+          <Tabs.Content value="rachunki">
+            <PaymentTenantComponent />
           </Tabs.Content>
         </div>
       </Tabs.Root>
