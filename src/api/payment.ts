@@ -11,3 +11,12 @@ export const getPaymentsByActiveUserOffers = async (): Promise<Payment[]> => {
   );
   return response.data;
 };
+
+export const getAllPaymentsForPropertyByActiveUserOffers = async (
+  propertyId: number
+): Promise<Payment[]> => {
+  const response = await api.get<Payment[]>(
+    `/Payment/getAllPaymentsForPropertyByActiveUserOffers?propertyId=${propertyId}`
+  );
+  return response.data;
+};

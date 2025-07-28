@@ -7,9 +7,13 @@
 //Filtrowanie po jednym najemcy
 
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CreatePaymentFormComponent from "../Payments/CreatePaymentFormComponent";
-import { createPayment } from "../../../api/payment";
+import {
+  createPayment,
+  getAllPaymentsForPropertyByActiveUserOffers,
+} from "../../../api/payment";
+import type { Payment } from "../../../types/Payment";
 
 type PaymentOwnerComponentsProps = {
   propertyId: number;
@@ -17,11 +21,24 @@ type PaymentOwnerComponentsProps = {
 
 const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>([]);
 
   const handleCreatePayment = () => {
     if (!propertyId) return;
     setIsCreatingPayment(true);
   };
+  const fetchPayments = async () => {
+    try {
+      let data = await getAllPaymentsForPropertyByActiveUserOffers(propertyId);
+      setPayments(data);
+    } catch (err) {
+      console.error("Błąd przy ładowaniu rachunków ", err);
+    }
+  };
+  useEffect(() => {
+    fetchPayments();
+  }, []);
+
   return (
     <div>
       {isCreatingPayment ? (
@@ -38,12 +55,32 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
           propertyId={propertyId}
         />
       ) : (
-        <button
-          onClick={handleCreatePayment}
-          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
-        >
-          Stwórz rachunek
-        </button>
+        <div>
+          <div>
+            {payments.map((payment) => (
+              <tr
+                key={payment.id}
+                className="border-t border-gray-200 hover:bg-gray-50 transition"
+              >
+                <td className="px-4 py-2 text-sm text-gray-800">
+                  {payment.amount.toFixed(2)} zł
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-800">
+                  {payment.description}
+                </td>
+                <td className="px-4 py-2 text-sm text-gray-800">
+                  {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
+                </td>
+              </tr>
+            ))}
+          </div>
+          <button
+            onClick={handleCreatePayment}
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
+          >
+            Stwórz rachunek
+          </button>
+        </div>
       )}
     </div>
   );
