@@ -13,7 +13,7 @@ import {
   createPayment,
   getAllPaymentsForPropertyByActiveUserOffers,
 } from "../../../api/payment";
-import type { Payment } from "../../../types/Payment";
+import type { PaymentWithTenantName } from "../../../types/Payment";
 
 type PaymentOwnerComponentsProps = {
   propertyId: number;
@@ -21,7 +21,7 @@ type PaymentOwnerComponentsProps = {
 
 const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [payments, setPayments] = useState<PaymentWithTenantName[]>([]);
 
   const handleCreatePayment = () => {
     if (!propertyId) return;
@@ -36,8 +36,10 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
     }
   };
   useEffect(() => {
-    fetchPayments();
-  }, []);
+    if (propertyId) {
+      fetchPayments();
+    }
+  }, [propertyId]);
 
   return (
     <div>
@@ -56,24 +58,37 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
         />
       ) : (
         <div>
-          <div>
-            {payments.map((payment) => (
-              <tr
-                key={payment.id}
-                className="border-t border-gray-200 hover:bg-gray-50 transition"
-              >
-                <td className="px-4 py-2 text-sm text-gray-800">
-                  {payment.amount.toFixed(2)} zł
-                </td>
-                <td className="px-4 py-2 text-sm text-gray-800">
-                  {payment.description}
-                </td>
-                <td className="px-4 py-2 text-sm text-gray-800">
-                  {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
-                </td>
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="bg-gray-100 text-left text-sm text-gray-600">
+                <th className="px-4 py-2">Najemca</th>
+                <th className="px-4 py-2">Kwota</th>
+                <th className="px-4 py-2">Opis</th>
+                <th className="px-4 py-2">Termin płatności</th>
               </tr>
-            ))}
-          </div>
+            </thead>
+            <tbody>
+              {payments.map((payment) => (
+                <tr
+                  key={payment.id}
+                  className="border-t border-gray-200 hover:bg-gray-50 transition"
+                >
+                  <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                    {payment.tenantName} {payment.tenantSurname}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                    {payment.amount.toFixed(2)} zł
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-800 w-[50%]">
+                    {payment.description}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                    {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           <button
             onClick={handleCreatePayment}
             className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
