@@ -1,6 +1,20 @@
 export type Payment = {
   id: number;
   offerId: number;
+  tenantId: number;
+  amount: number;
+  description: string;
+  status: PaymentStatus;
+  dueDate: string;
+  paidAt: string;
+  paymentMethod: string;
+};
+export type PaymentWithTenantName = {
+  id: number;
+  offerId: number;
+  tenantId: number;
+  tenantName: string;
+  tenantSurname: string;
   amount: number;
   description: string;
   status: PaymentStatus;

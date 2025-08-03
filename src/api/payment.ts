@@ -1,5 +1,9 @@
 import api from "./axiosInstance";
-import type { CreatePayment, Payment } from "../types/Payment";
+import type {
+  CreatePayment,
+  Payment,
+  PaymentWithTenantName,
+} from "../types/Payment";
 
 export const createPayment = async (payment: CreatePayment): Promise<void> => {
   await api.post("/Payment", payment);
@@ -14,8 +18,8 @@ export const getPaymentsByActiveUserOffers = async (): Promise<Payment[]> => {
 
 export const getAllPaymentsForPropertyByActiveUserOffers = async (
   propertyId: number
-): Promise<Payment[]> => {
-  const response = await api.get<Payment[]>(
+): Promise<PaymentWithTenantName[]> => {
+  const response = await api.get<PaymentWithTenantName[]>(
     `/Payment/getAllPaymentsForPropertyByActiveUserOffers?propertyId=${propertyId}`
   );
   return response.data;
