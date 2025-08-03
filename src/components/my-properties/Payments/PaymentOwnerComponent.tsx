@@ -49,6 +49,7 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
           onSubmit={async (data) => {
             try {
               await createPayment(data);
+              await fetchPayments();
               setIsCreatingPayment(false);
             } catch (err) {
               console.error("Błąd tworzenia płatności:", err);
@@ -68,25 +69,31 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
               </tr>
             </thead>
             <tbody>
-              {payments.map((payment) => (
-                <tr
-                  key={payment.id}
-                  className="border-t border-gray-200 hover:bg-gray-50 transition"
-                >
-                  <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
-                    {payment.tenantName} {payment.tenantSurname}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
-                    {payment.amount.toFixed(2)} zł
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-800 w-[50%]">
-                    {payment.description}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
-                    {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
-                  </td>
-                </tr>
-              ))}
+              {[...payments]
+                .sort(
+                  (a, b) =>
+                    new Date(b.dueDate).getTime() -
+                    new Date(a.dueDate).getTime()
+                )
+                .map((payment) => (
+                  <tr
+                    key={payment.id}
+                    className="border-t border-gray-200 hover:bg-gray-50 transition"
+                  >
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                      {payment.tenantName} {payment.tenantSurname}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                      {payment.amount.toFixed(2)} zł
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[50%]">
+                      {payment.description}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                      {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
           <button

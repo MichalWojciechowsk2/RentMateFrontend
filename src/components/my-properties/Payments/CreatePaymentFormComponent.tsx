@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { CreatePayment } from "../../../types/Payment";
-import type { Offer } from "../../../types/Offer";
+import { OfferStatus, type Offer } from "../../../types/Offer";
 import { getValidOffersByPropertyId } from "../../../api/offer";
 
 type CreatePaymentFormComponentProps = {
@@ -69,11 +69,13 @@ const CreatePaymentFormComponent = ({
           >
             <option value={0}>--Wybierz najemców--</option>
             <option value={-1}>Wszyscy</option>
-            {offers?.map((offer) => (
-              <option key={offer.id} value={offer.id}>
-                {offer.tenantName} {offer.tenantLastName}
-              </option>
-            ))}
+            {offers
+              ?.filter((offer) => offer.status === OfferStatus.Accepted)
+              .map((offer) => (
+                <option key={offer.id} value={offer.id}>
+                  {offer.tenantName} {offer.tenantLastName}
+                </option>
+              ))}
           </select>
         </div>
 
