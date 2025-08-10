@@ -3,6 +3,7 @@ import { GetPropertyById } from "../../../api/property";
 import {
   createOffer as CreateOfferApi,
   getValidOffersByPropertyId,
+  downloadOfferContractPdf,
 } from "../../../api/offer";
 import type { Property } from "../../../types/Property";
 import {
@@ -47,6 +48,22 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
     } else {
       setErrorMessage(null);
       setIsCreatingOffer(true);
+    }
+  };
+
+  const handleDownloadPdf = async (offerId: number) => {
+    try {
+      const pdfBlob = await downloadOfferContractPdf(offerId);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Umowa_${offerId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Błąd pobierania PDF:", error);
     }
   };
 
@@ -118,10 +135,10 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
                                 {offer.status === OfferStatus.Accepted
                                   ? "Umowa - "
                                   : offer.status === OfferStatus.Active
-                                  ? " Oczekująca na akcje najemcy: "
+                                  ? " Oczekująca na akcje najemcy"
                                   : ""}
 
-                                {`${offer.tenantName}  ${offer.tenantLastName}`}
+                                {`${offer.tenant.firstName}  ${offer.tenant.lastName}`}
                               </div>
                               <div className="text-sm">
                                 {offer.status === OfferStatus.Accepted && (
@@ -172,11 +189,22 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
                             <ChevronDownIcon className="w-6 h-6 transition-transform duration-300 group-data-[state=open]:rotate-180" />
                           </Accordion.Trigger>
                         </Accordion.Header>
-
                         <Accordion.Content className="px-4 py-3">
-                          <p className="text-gray-700">
-                            Tutaj będzie treść umowy z możliwością pobrania jej
-                          </p>
+                          <div className="flex justify-end mb-2">
+                            <button
+                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                              onClick={() => handleDownloadPdf(offer.id)}
+                            >
+                              Pobierz PDF
+                            </button>
+                          </div>
+
+                          <div
+                            className="text-gray-700 prose p-5"
+                            dangerouslySetInnerHTML={{
+                              __html: offer.offerContract,
+                            }}
+                          />
                         </Accordion.Content>
                       </Accordion.Item>
                     </Accordion.Root>
