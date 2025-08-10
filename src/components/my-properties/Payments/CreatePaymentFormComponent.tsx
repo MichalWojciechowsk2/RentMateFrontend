@@ -67,13 +67,13 @@ const CreatePaymentFormComponent = ({
               }))
             }
           >
-            <option value={0}>--Wybierz najemców--</option>
+            <option value={0}>Wybierz najemców</option>
             <option value={-1}>Wszyscy</option>
             {offers
               ?.filter((offer) => offer.status === OfferStatus.Accepted)
               .map((offer) => (
                 <option key={offer.id} value={offer.id}>
-                  {offer.tenantName} {offer.tenantLastName}
+                  {offer.tenant.firstName} {offer.tenant.lastName}
                 </option>
               ))}
           </select>

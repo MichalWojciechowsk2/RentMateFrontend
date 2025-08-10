@@ -135,7 +135,7 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
                                 {offer.status === OfferStatus.Accepted
                                   ? "Umowa - "
                                   : offer.status === OfferStatus.Active
-                                  ? " Oczekująca na akcje najemcy"
+                                  ? " Oczekująca na akcje najemcy "
                                   : ""}
 
                                 {`${offer.tenant.firstName}  ${offer.tenant.lastName}`}
