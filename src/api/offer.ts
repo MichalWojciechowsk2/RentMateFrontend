@@ -31,3 +31,12 @@ export const updateOfferStatus = async (
   );
   return response.data;
 };
+
+export const downloadOfferContractPdf = async (
+  offerId: number
+): Promise<Blob> => {
+  const response = await api.get(`/Offer/${offerId}/offerContract/pdf`, {
+    responseType: "blob",
+  });
+  return response.data;
+};

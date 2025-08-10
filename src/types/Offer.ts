@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type Offer = {
   id: number;
   propertyId: number;
@@ -9,10 +11,8 @@ export type Offer = {
   tenantId: number;
   createdAt: Date;
   acceptedAt: Date;
-  tenantEmail: string;
-  tenantName: string;
-  tenantLastName: string;
-  tenantPhoneNumber: string;
+  offerContract: string;
+  tenant: User;
 };
 
 export type CreateOffer = {
