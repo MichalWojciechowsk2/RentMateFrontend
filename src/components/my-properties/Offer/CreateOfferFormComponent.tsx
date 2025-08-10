@@ -21,6 +21,8 @@ const CreateOfferFormComponent = ({
     tenantId: 0,
   });
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -38,9 +40,24 @@ const CreateOfferFormComponent = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSubmit) onSubmit({ ...form });
+    setErrorMessage(null);
+    if (onSubmit) {
+      try {
+        await onSubmit({ ...form });
+      } catch (err: any) {
+        if (err.response && err.response.status === 409) {
+          setErrorMessage(
+            err.response.data?.message || "Nie możesz utworzyć tej oferty."
+          );
+        } else if (err.message) {
+          setErrorMessage(err.message);
+        } else {
+          setErrorMessage("Coś poszło nie tak.");
+        }
+      }
+    }
   };
 
   return (
@@ -109,6 +126,9 @@ const CreateOfferFormComponent = ({
             className="border p-2 rounded w-full"
             required
           />
+          {errorMessage && (
+            <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+          )}
         </div>
 
         <div className="md:col-span-2 flex justify-end gap-3 mt-4">

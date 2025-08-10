@@ -83,7 +83,7 @@ const OfferComponent = ({ propertyId }: OfferComponentProps) => {
       await fetchOffers();
     } catch (err) {
       console.error("Błąd tworzenia oferty", err);
-      setErrorMessage("Nie udało się utworzyć oferty.");
+      throw err;
     }
   };
 
