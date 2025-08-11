@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { OfferStatus, type Offer } from "../../types/Offer";
-import { getOffersByUserId, updateOfferStatus } from "../../api/offer";
+import {
+  getOffersByUserId,
+  updateOfferStatus,
+  downloadOfferContractPdf,
+} from "../../api/offer";
 import { type Property } from "../../types/Property";
 import { GetPropertyById } from "../../api/property";
 import { Link } from "react-router-dom";
+import * as Accordion from "@radix-ui/react-accordion";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 
 type MyOfferComponentProps = {
   currentUserId?: number;
@@ -59,6 +65,22 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
   const DeclineOffer = (offerId: number) =>
     changeOfferStatus(offerId, OfferStatus.Cancelled);
 
+  const handleDownloadPdf = async (offerId: number) => {
+    try {
+      const pdfBlob = await downloadOfferContractPdf(offerId);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Umowa_${offerId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Błąd pobierania PDF:", error);
+    }
+  };
+
   useEffect(() => {
     if (acceptedOffer) {
       fetchPropertyIfOfferAccepted(acceptedOffer.propertyId).catch((err) => {
@@ -81,8 +103,8 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
             >
               <div>Masz zaproszenie do mieszkania</div>
               <div>
-                <p>ID oferty: {offer.id}</p>
-                <p>ID mieszkania: {offer.propertyId}</p>
+                <p>Identyfikator oferty: {offer.id}</p>
+                <p>Identyfikator mieszkania mieszkania: {offer.propertyId}</p>
                 <p>Kwota najmu: {offer.rentAmount} PLN</p>
               </div>
               <button
@@ -130,13 +152,49 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
               </div>
             </Link>
           </div>
-          <div className="mt-6 p-4 border rounded font-semibold text-green-700 bg-green-100">
-            <div>Twoja zaakceptowana oferta:</div>
-            <div>
-              <p>ID oferty: {acceptedOffer.id}</p>
-              <p>ID mieszkania: {acceptedOffer.propertyId}</p>
-              <p>Kwota najmu: {acceptedOffer.rentAmount} PLN</p>
-            </div>
+          <div className="mt-6 p-4 border rounded font-semibold bg-grey-100">
+            <Accordion.Root
+              key={acceptedOffer.id}
+              type="single"
+              collapsible
+              className="mb-2"
+            >
+              <Accordion.Item
+                value={`item-${acceptedOffer.id}`}
+                className="border rounded overflow-hidden bg-[#F1F5F9] border-[#F1F5F9]"
+              >
+                <Accordion.Header>
+                  <Accordion.Trigger className="group w-full text-left px-4 py-3 bg-[#1b2947] text-white flex justify-between items-center">
+                    <div>
+                      <p>Identyfikator oferty: {acceptedOffer.id}</p>
+                      <p>
+                        Identyfikator mieszkania: {acceptedOffer.propertyId}
+                      </p>
+                      <p>Kwota najmu: {acceptedOffer.rentAmount} PLN</p>
+                    </div>
+
+                    <ChevronDownIcon className="w-6 h-6 transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                  </Accordion.Trigger>
+                </Accordion.Header>
+
+                <Accordion.Content className="px-4 py-3">
+                  <div className="flex justify-end mb-2">
+                    <button
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      onClick={() => handleDownloadPdf(acceptedOffer.id)}
+                    >
+                      Pobierz PDF
+                    </button>
+                  </div>
+                  <div
+                    className="text-gray-700 prose p-5"
+                    dangerouslySetInnerHTML={{
+                      __html: acceptedOffer.offerContract,
+                    }}
+                  />
+                </Accordion.Content>
+              </Accordion.Item>
+            </Accordion.Root>
           </div>
         </div>
       )}
