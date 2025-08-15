@@ -22,6 +22,9 @@ const CreatePaymentFormComponent = ({
     description: "",
     dueDate: "",
     paymentMethod: "",
+    generateWithRecurring: false,
+    nextGenerationInDays: 0,
+    recurrenceTimes: 0,
   });
 
   useEffect(() => {
@@ -45,6 +48,9 @@ const CreatePaymentFormComponent = ({
       description: form.description,
       dueDate: new Date(form.dueDate).toISOString(),
       paymentMethod: form.paymentMethod,
+      generateWithRecurring: form.generateWithRecurring,
+      nextGenerationInDays: form.nextGenerationInDays,
+      recurrenceTimes: form.recurrenceTimes,
     });
     onCancel();
   };
@@ -147,6 +153,72 @@ const CreatePaymentFormComponent = ({
             required
           />
         </div>
+
+        <div>
+          <label className="inline-flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={form.generateWithRecurring}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  generateWithRecurring: e.target.checked,
+                }))
+              }
+            />
+            <span>Generuj cyklicznie</span>
+          </label>
+        </div>
+
+        {form.generateWithRecurring && (
+          <>
+            <div>
+              <label
+                htmlFor="nextGenerationInDays"
+                className="block mb-1 font-medium"
+              >
+                Co ile dni generować?
+              </label>
+              <input
+                id="nextGenerationInDays"
+                type="number"
+                className="w-full border p-2 rounded"
+                value={form.nextGenerationInDays}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    nextGenerationInDays: parseInt(e.target.value, 10),
+                  }))
+                }
+                min={1}
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="recurrenceTimes"
+                className="block mb-1 font-medium"
+              >
+                Ile razy powtórzyć?
+              </label>
+              <input
+                id="recurrenceTimes"
+                type="number"
+                className="w-full border p-2 rounded"
+                value={form.recurrenceTimes}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    recurrenceTimes: parseInt(e.target.value, 10),
+                  }))
+                }
+                min={1}
+                required
+              />
+            </div>
+          </>
+        )}
 
         <div className="flex space-x-4">
           <button

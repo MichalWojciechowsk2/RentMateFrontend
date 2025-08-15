@@ -5,6 +5,7 @@
 //Kolor zielony (wszyscy opłacili), niebieski (w trakcie opłacania), czerwony już jest po terminie na wpłatę
 //Zakładka jakaś na to żeby właściciel mógł edytować te oferty które wysyłane są cyklicznie
 //Filtrowanie po jednym najemcy
+//Dodać max 10 ostatnich rachunków a pod spodem rozwijana lista cyklicznych rachunków żeby właściciel mógł edytować, zatrzymać ten rachunek itd
 
 import React from "react";
 import { useState, useEffect } from "react";
@@ -98,10 +99,13 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
           </table>
           <button
             onClick={handleCreatePayment}
-            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4 mb-2"
           >
             Stwórz rachunek
           </button>
+          {/* Wyświetla się jeżeli w tabeli recurrencePayments jest jakis rekord zwiazany z tym mieszkaniem po rozwinięciu będzie można edytować, usunąć
+          (sprawdzic czy nie będą się usuwały te payments ktore juz sa) */}
+          <div> Umowy cykliczne</div>
         </div>
       )}
     </div>
