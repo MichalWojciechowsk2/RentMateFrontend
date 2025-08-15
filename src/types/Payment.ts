@@ -30,6 +30,9 @@ export type CreatePayment = {
   description: string;
   dueDate: string;
   paymentMethod: string;
+  generateWithRecurring: boolean;
+  nextGenerationInDays: number;
+  recurrenceTimes: number;
 };
 
 export const PaymentStatus = {
