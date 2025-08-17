@@ -13,8 +13,12 @@ import CreatePaymentFormComponent from "../Payments/CreatePaymentFormComponent";
 import {
   createPayment,
   getAllPaymentsForPropertyByActiveUserOffers,
+  getAllRecurringPaymentsByPropertyId,
 } from "../../../api/payment";
-import type { PaymentWithTenantName } from "../../../types/Payment";
+import {
+  type RecurringPaymentDto,
+  type PaymentWithTenantName,
+} from "../../../types/Payment";
 
 type PaymentOwnerComponentsProps = {
   propertyId: number;
@@ -23,6 +27,9 @@ type PaymentOwnerComponentsProps = {
 const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
   const [isCreatingPayment, setIsCreatingPayment] = useState(false);
   const [payments, setPayments] = useState<PaymentWithTenantName[]>([]);
+  const [recurringPayments, setRecurringPayments] = useState<
+    RecurringPaymentDto[]
+  >([]);
 
   const handleCreatePayment = () => {
     if (!propertyId) return;
@@ -31,7 +38,11 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
   const fetchPayments = async () => {
     try {
       let data = await getAllPaymentsForPropertyByActiveUserOffers(propertyId);
+      let recurringPaymentsData = await getAllRecurringPaymentsByPropertyId(
+        propertyId
+      );
       setPayments(data);
+      setRecurringPayments(recurringPaymentsData);
     } catch (err) {
       console.error("Błąd przy ładowaniu rachunków ", err);
     }
@@ -103,9 +114,30 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
           >
             Stwórz rachunek
           </button>
-          {/* Wyświetla się jeżeli w tabeli recurrencePayments jest jakis rekord zwiazany z tym mieszkaniem po rozwinięciu będzie można edytować, usunąć
-          (sprawdzic czy nie będą się usuwały te payments ktore juz sa) */}
-          <div> Umowy cykliczne</div>
+          <div className="mt-6 text-gray-600">
+            <h3 className="text-lg font-semibold mb-2">Rachunki cykliczne</h3>
+            <div className="space-y-3">
+              {recurringPayments.map((rp) => (
+                <div
+                  key={rp.id}
+                  className="p-4 border rounded-lg shadow-sm bg-gray-50 flex justify-between items-center"
+                >
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium">Rachunek ID:</span> {rp.id}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      <span className="font-medium">Pozostałe cykle:</span>{" "}
+                      {rp.recurrenceTimes}
+                    </p>
+                  </div>
+                  <button className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">
+                    Zatrzymaj
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

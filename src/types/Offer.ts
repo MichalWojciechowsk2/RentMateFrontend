@@ -1,4 +1,5 @@
 import type { User } from "./User";
+import type { Property } from "./Property";
 
 export type Offer = {
   id: number;
@@ -13,6 +14,7 @@ export type Offer = {
   acceptedAt: Date;
   offerContract: string;
   tenant: User;
+  // property: Property;
 };
 
 export type CreateOffer = {
