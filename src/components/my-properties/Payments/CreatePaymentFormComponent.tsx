@@ -23,7 +23,6 @@ const CreatePaymentFormComponent = ({
     dueDate: "",
     paymentMethod: "",
     generateWithRecurring: false,
-    nextGenerationInDays: 0,
     recurrenceTimes: 0,
   });
 
@@ -49,7 +48,6 @@ const CreatePaymentFormComponent = ({
       dueDate: new Date(form.dueDate).toISOString(),
       paymentMethod: form.paymentMethod,
       generateWithRecurring: form.generateWithRecurring,
-      nextGenerationInDays: form.nextGenerationInDays,
       recurrenceTimes: form.recurrenceTimes,
     });
     onCancel();
@@ -173,49 +171,37 @@ const CreatePaymentFormComponent = ({
         {form.generateWithRecurring && (
           <>
             <div>
-              <label
-                htmlFor="nextGenerationInDays"
-                className="block mb-1 font-medium"
-              >
-                Co ile dni generować?
-              </label>
-              <input
-                id="nextGenerationInDays"
-                type="number"
-                className="w-full border p-2 rounded"
-                value={form.nextGenerationInDays}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    nextGenerationInDays: parseInt(e.target.value, 10),
-                  }))
-                }
-                min={1}
-                required
-              />
-            </div>
+              <label className="block mb-1 font-medium">Opcje powtórzeń</label>
 
-            <div>
-              <label
-                htmlFor="recurrenceTimes"
-                className="block mb-1 font-medium"
-              >
-                Ile razy powtórzyć?
+              {form.recurrenceTimes !== -1 && (
+                <input
+                  id="recurrenceTimes"
+                  type="number"
+                  className="w-full border p-2 rounded"
+                  value={form.recurrenceTimes}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      recurrenceTimes: parseInt(e.target.value, 10),
+                    }))
+                  }
+                  min={1}
+                  required
+                />
+              )}
+              <label className="inline-flex items-center space-x-2 mb-2">
+                <input
+                  type="checkbox"
+                  checked={form.recurrenceTimes === -1}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      recurrenceTimes: e.target.checked ? -1 : 1,
+                    }))
+                  }
+                />
+                <span>Do końca trwania umowy</span>
               </label>
-              <input
-                id="recurrenceTimes"
-                type="number"
-                className="w-full border p-2 rounded"
-                value={form.recurrenceTimes}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    recurrenceTimes: parseInt(e.target.value, 10),
-                  }))
-                }
-                min={1}
-                required
-              />
             </div>
           </>
         )}

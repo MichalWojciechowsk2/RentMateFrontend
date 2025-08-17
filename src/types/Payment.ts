@@ -1,3 +1,5 @@
+import type { Offer } from "./Offer";
+
 export type Payment = {
   id: number;
   offerId: number;
@@ -8,6 +10,7 @@ export type Payment = {
   dueDate: string;
   paidAt: string;
   paymentMethod: string;
+  // offer: Offer;
 };
 export type PaymentWithTenantName = {
   id: number;
@@ -31,7 +34,6 @@ export type CreatePayment = {
   dueDate: string;
   paymentMethod: string;
   generateWithRecurring: boolean;
-  nextGenerationInDays: number;
   recurrenceTimes: number;
 };
 
@@ -41,5 +43,12 @@ export const PaymentStatus = {
   Failed: 2,
   Cancelled: 3,
 } as const;
+
+export type RecurringPaymentDto = {
+  id: number;
+  paymentId: number;
+  recurrenceTimes: number;
+  payment: Payment;
+};
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
