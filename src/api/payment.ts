@@ -34,3 +34,12 @@ export const getAllRecurringPaymentsByPropertyId = async (
   );
   return response.data;
 };
+
+export const deleteRecurringPaymentById = async (
+  recurringPaymentId: number
+): Promise<boolean> => {
+  const response = await api.delete(
+    `/Payment/deleteRecurringPaymentById?recurringPaymentId=${recurringPaymentId}`
+  );
+  return response.status === 204;
+};

@@ -14,6 +14,7 @@ import {
   createPayment,
   getAllPaymentsForPropertyByActiveUserOffers,
   getAllRecurringPaymentsByPropertyId,
+  deleteRecurringPaymentById,
 } from "../../../api/payment";
 import {
   type RecurringPaymentDto,
@@ -35,6 +36,21 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
     if (!propertyId) return;
     setIsCreatingPayment(true);
   };
+  const handleDeleteRecurringPayment = async (id: number) => {
+    try {
+      const success = await deleteRecurringPaymentById(id);
+      if (success) {
+        if (success) {
+          setRecurringPayments((prev) => prev.filter((rp) => rp.id !== id));
+        }
+      } else {
+        alert("Nie udało się usunąć recurring payment");
+      }
+    } catch (error) {
+      console.error("Błąd przy usuwaniu recurring payment", error);
+    }
+  };
+
   const fetchPayments = async () => {
     try {
       let data = await getAllPaymentsForPropertyByActiveUserOffers(propertyId);
@@ -131,8 +147,11 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
                       {rp.recurrenceTimes}
                     </p>
                   </div>
-                  <button className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600">
-                    Zatrzymaj
+                  <button
+                    onClick={() => handleDeleteRecurringPayment(rp.id)}
+                    className="px-3 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Usuń
                   </button>
                 </div>
               ))}
