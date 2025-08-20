@@ -11,6 +11,7 @@ import type {
   Property,
 } from "../../../types/Property";
 import EditPropertyForm from "./EditPropertyForm";
+import { FaCopy } from "react-icons/fa6";
 
 type Props = {
   onRefetch: () => void;
@@ -21,6 +22,7 @@ const PropertyComponent = ({ onRefetch }: Props) => {
   const { id } = useParams();
   const [property, setProperty] = useState<PropertyEntity | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -75,8 +77,13 @@ const PropertyComponent = ({ onRefetch }: Props) => {
     if (id) fetchProperty(Number(id));
   }, [id]);
 
-  console.log("property.title: ", property?.title);
-  console.log("property.UpdatedAt: ", property?.updatedAt);
+  const copyLink = () => {
+    const url = `http://localhost:5173/property/${property?.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    });
+  };
 
   if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
 
@@ -97,24 +104,50 @@ const PropertyComponent = ({ onRefetch }: Props) => {
           <span className="font-medium">
             Twoje ogłoszenie jest opublikowane
           </span>
-          <button
-            onClick={unpublishProperty}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition"
-          >
-            Ukryj ogłoszenie
-          </button>
+          <div className="flex items-center relative">
+            <button
+              onClick={copyLink}
+              className="mr-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition flex items-center justify-center"
+            >
+              <FaCopy className="text-base" />
+            </button>
+            <button
+              onClick={unpublishProperty}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg transition"
+            >
+              Ukryj ogłoszenie
+            </button>
+            {copied && (
+              <div className="absolute -top-8 left-0 bg-black text-white text-xs px-2 py-1 rounded-md shadow-lg">
+                Skopiowano!
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <div className="flex text-gray-900 justify-between items-center p-3 mb-6 border border-orange-300 rounded-xl bg-orange-100 shadow-sm">
           <span className="font-medium">
             Twoje ogłoszenie nie jest opublikowane
           </span>
-          <button
-            onClick={publishProperty}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1 rounded-lg transition"
-          >
-            Opublikuj
-          </button>
+          <div className="flex items-center relative">
+            <button
+              onClick={copyLink}
+              className="mr-1 bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg transition flex items-center justify-center"
+            >
+              <FaCopy className="text-base" />
+            </button>
+            <button
+              onClick={publishProperty}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-1 rounded-lg transition"
+            >
+              Opublikuj
+            </button>
+            {copied && (
+              <div className="absolute -top-8 left-0 bg-black text-white text-xs px-2 py-1 rounded-md shadow-lg">
+                Skopiowano!
+              </div>
+            )}
+          </div>
         </div>
       )}
       <div className="max-w-7xl mx-auto gap-12 animate-fade-in mb-30">
