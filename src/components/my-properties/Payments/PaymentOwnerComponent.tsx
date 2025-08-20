@@ -15,11 +15,13 @@ import {
   getAllPaymentsForPropertyByActiveUserOffers,
   getAllRecurringPaymentsByPropertyId,
   deleteRecurringPaymentById,
+  deactivePaymentByPamentId,
 } from "../../../api/payment";
 import {
   type RecurringPaymentDto,
   type PaymentWithTenantName,
 } from "../../../types/Payment";
+import { TiDeleteOutline } from "react-icons/ti";
 
 type PaymentOwnerComponentsProps = {
   propertyId: number;
@@ -61,6 +63,15 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
       setRecurringPayments(recurringPaymentsData);
     } catch (err) {
       console.error("Błąd przy ładowaniu rachunków ", err);
+    }
+  };
+
+  const deactivePaymentByPamentId = async (paymentId: number) => {
+    try {
+      await deactivePaymentByPamentId(paymentId);
+      await fetchPayments();
+    } catch (err) {
+      console.error("Błąd podczas dezaktywowania rachunku");
     }
   };
   useEffect(() => {
@@ -119,6 +130,17 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
                     </td>
                     <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
                       {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => deactivePaymentByPamentId(payment.id)}
+                        className="transition-colors m-2 bg-transparent border-none p-0"
+                      >
+                        <TiDeleteOutline
+                          size={28}
+                          className="text-gray-500 hover:text-blue-600 transition-colors"
+                        />
+                      </button>
                     </td>
                   </tr>
                 ))}

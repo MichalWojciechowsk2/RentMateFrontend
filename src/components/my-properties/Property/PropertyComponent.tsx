@@ -219,9 +219,6 @@ const PropertyComponent = ({ onRefetch }: Props) => {
             Komentarze (Których właściciel nie może usunąć ale może skontaktować
             się z osobą która ten komentarz napisała)
           </div>
-          <div>
-            Przycisk do łatwego udostępniania (np w mediach społecznościowych)
-          </div>
         </div>
       </div>
     </div>
