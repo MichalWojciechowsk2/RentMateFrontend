@@ -43,3 +43,10 @@ export const deleteRecurringPaymentById = async (
   );
   return response.status === 204;
 };
+
+export const deactivePaymentByPamentId = async (
+  paymentId: number
+): Promise<boolean> => {
+  const response = await api.patch(`/Payment/deactivate/${paymentId}`);
+  return response.data;
+};
