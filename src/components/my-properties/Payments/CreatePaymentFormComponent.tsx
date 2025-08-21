@@ -15,6 +15,7 @@ const CreatePaymentFormComponent = ({
   propertyId,
 }: CreatePaymentFormComponentProps) => {
   const [offers, setOffers] = useState<Offer[] | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState<Omit<CreatePayment, "id">>({
     propertyId: propertyId,
     offerId: 0,
@@ -38,8 +39,31 @@ const CreatePaymentFormComponent = ({
     fetchData();
   }, [propertyId]);
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (form.offerId === 0) newErrors.offerId = "Musisz wybrać najemcę.";
+    if (form.amount <= 0) newErrors.amount = "Kwota musi być większa od zera.";
+    if (form.description.trim().length < 3)
+      newErrors.description = "Opis musi mieć co najmniej 3 znaki.";
+    if (!form.dueDate) newErrors.dueDate = "Podaj termin płatności.";
+    else if (new Date(form.dueDate) < new Date())
+      newErrors.dueDate = "Termin nie może być w przeszłości.";
+    if (!form.paymentMethod.trim())
+      newErrors.paymentMethod = "Podaj metodę płatności.";
+
+    if (form.generateWithRecurring && form.recurrenceTimes <= 0) {
+      newErrors.recurrenceTimes =
+        "Liczba powtórzeń musi być większa od zera lub wybierz 'do końca trwania umowy'.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     onSubmit({
       propertyId: propertyId,
       offerId: form.offerId,
@@ -81,6 +105,9 @@ const CreatePaymentFormComponent = ({
                 </option>
               ))}
           </select>
+          {errors.offerId && (
+            <p className="text-red-500 text-sm mt-1">{errors.offerId}</p>
+          )}
         </div>
 
         <div>
@@ -102,6 +129,9 @@ const CreatePaymentFormComponent = ({
             step={0.01}
             required
           />
+          {errors.amount && (
+            <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
+          )}
         </div>
 
         <div>
@@ -118,6 +148,9 @@ const CreatePaymentFormComponent = ({
             rows={3}
             required
           />
+          {errors.description && (
+            <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+          )}
         </div>
 
         <div>
@@ -134,6 +167,9 @@ const CreatePaymentFormComponent = ({
             }
             required
           />
+          {errors.dueDate && (
+            <p className="text-red-500 text-sm mt-1">{errors.dueDate}</p>
+          )}
         </div>
 
         <div>
@@ -150,6 +186,9 @@ const CreatePaymentFormComponent = ({
             }
             required
           />
+          {errors.paymentMethod && (
+            <p className="text-red-500 text-sm mt-1">{errors.paymentMethod}</p>
+          )}
         </div>
 
         <div>
@@ -174,20 +213,27 @@ const CreatePaymentFormComponent = ({
               <label className="block mb-1 font-medium">Opcje powtórzeń</label>
 
               {form.recurrenceTimes !== -1 && (
-                <input
-                  id="recurrenceTimes"
-                  type="number"
-                  className="w-full border p-2 rounded"
-                  value={form.recurrenceTimes}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      recurrenceTimes: parseInt(e.target.value, 10),
-                    }))
-                  }
-                  min={1}
-                  required
-                />
+                <>
+                  <input
+                    id="recurrenceTimes"
+                    type="number"
+                    className="w-full border p-2 rounded"
+                    value={form.recurrenceTimes}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        recurrenceTimes: parseInt(e.target.value, 10),
+                      }))
+                    }
+                    min={1}
+                    required
+                  />
+                  {errors.recurrenceTimes && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.recurrenceTimes}
+                    </p>
+                  )}
+                </>
               )}
               <label className="inline-flex items-center space-x-2 mb-2">
                 <input

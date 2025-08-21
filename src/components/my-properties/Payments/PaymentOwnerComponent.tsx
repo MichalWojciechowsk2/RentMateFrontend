@@ -15,7 +15,7 @@ import {
   getAllPaymentsForPropertyByActiveUserOffers,
   getAllRecurringPaymentsByPropertyId,
   deleteRecurringPaymentById,
-  deactivePaymentByPamentId,
+  deactivatePaymentByPamentId,
 } from "../../../api/payment";
 import {
   type RecurringPaymentDto,
@@ -66,9 +66,9 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
     }
   };
 
-  const deactivePaymentByPamentId = async (paymentId: number) => {
+  const handleDeactivatePayment = async (paymentId: number) => {
     try {
-      await deactivePaymentByPamentId(paymentId);
+      await deactivatePaymentByPamentId(paymentId);
       await fetchPayments();
     } catch (err) {
       console.error("Błąd podczas dezaktywowania rachunku");
@@ -133,7 +133,7 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
                     </td>
                     <td>
                       <button
-                        onClick={() => deactivePaymentByPamentId(payment.id)}
+                        onClick={() => handleDeactivatePayment(payment.id)}
                         className="transition-colors m-2 bg-transparent border-none p-0"
                       >
                         <TiDeleteOutline
