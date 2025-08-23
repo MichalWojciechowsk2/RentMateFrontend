@@ -62,7 +62,7 @@ const AddPropertyForm = () => {
         baseDeposit: parseFloat(form.baseDeposit),
       });
 
-      navigate(`/${newProperty.id}/add-photos`);
+      navigate(`/${newProperty.id}/add-photo`);
     } catch (err) {
       console.error("Błąd przy dodawaniu mieszkania:", err);
     }

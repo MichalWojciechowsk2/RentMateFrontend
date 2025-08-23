@@ -1,66 +1,79 @@
-import { useState, useEffect } from "react";
-import { createProperty, getCities, getDistricts } from "../api/property";
-import type { City, District } from "../types/Location";
-import { CITY_ID_TO_ENUM } from "../types/Location";
-import { useNavigate } from "react-router-dom";
-import { GrNext } from "react-icons/gr";
+import { useState } from "react";
+import { uploadPropertyImages } from "../api/property";
+import { useParams, useNavigate } from "react-router-dom";
+
+const MAX_IMAGES = 6;
 
 const AddPhotos = () => {
-  const [form, setForm] = useState({});
+  const [images, setImages] = useState<(File | null)[]>(
+    Array(MAX_IMAGES).fill(null)
+  );
+  const { propertyId } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {}, []);
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const handleFileChange = (index: number, file: File | null) => {
+    const updated = [...images];
+    updated[index] = file;
+    setImages(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    try {
-      const newProperty = await createProperty({
-        title: form.title.trim(),
-        description: form.description.trim(),
-        address: form.address.trim(),
-        area: parseFloat(form.area),
-        district: form.district,
-        roomCount: parseInt(form.roomCount),
-        city: CITY_ID_TO_ENUM[Number(form.city)],
-        postalCode: form.postalCode.trim(),
-        basePrice: parseFloat(form.basePrice),
-        baseDeposit: parseFloat(form.baseDeposit),
-      });
+    if (!propertyId) {
+      alert("Brak ID mieszkania w adresie!");
+      return;
+    }
 
-      navigate(`/properties`);
+    try {
+      const filesToUpload = images.filter((img): img is File => img !== null);
+      await uploadPropertyImages(Number(propertyId), filesToUpload);
+      navigate(`/properties/${propertyId}`);
     } catch (err) {
-      console.error("Błąd przy dodawaniu mieszkania:", err);
+      console.error("Błąd przy dodawaniu zdjęć:", err);
     }
   };
 
   return (
-    <div className="md:col-span-2">
-      <label className="block mb-1 font-medium">Zdjęcia mieszkania</label>
-      <input
-        type="file"
-        multiple
-        accept="image/*"
-        onChange={(e) => {
-          if (e.target.files) {
-            setForm((prev) => ({
-              ...prev,
-              images: Array.from(e.target.files), // zakładam, że w form masz pole images: File[]
-            }));
-          }
-        }}
-        className="w-full border p-2 rounded"
-      />
-    </div>
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto"
+    >
+      {images.map((img, index) => (
+        <div
+          key={index}
+          className="border rounded p-2 flex flex-col items-center justify-center"
+        >
+          {img ? (
+            <img
+              src={URL.createObjectURL(img)}
+              alt={`Podgląd ${index + 1}`}
+              className="w-full h-32 object-cover rounded mb-2"
+            />
+          ) : (
+            <div className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 rounded mb-2">
+              Brak zdjęcia
+            </div>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              handleFileChange(index, e.target.files?.[0] || null)
+            }
+          />
+        </div>
+      ))}
+
+      <div className="md:col-span-3 flex justify-end">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Dodaj zdjęcia
+        </button>
+      </div>
+    </form>
   );
 };
 

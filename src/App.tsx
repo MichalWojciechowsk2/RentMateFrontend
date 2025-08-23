@@ -12,6 +12,7 @@ import PropertyDetailPage from "./pages/PropertyDetailPage";
 import RegisterPage from "./pages/RegisterPage";
 import MyRentalPage from "./pages/MyRentalPage";
 import MenagePropertyPage from "./pages/MenagePropertyPage";
+import AddPhotos from "./pages/AddPhotos";
 
 const App = () => {
   return (
@@ -45,6 +46,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <AddPropertyPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path=":propertyId/add-photo"
+          element={
+            <PrivateRoute>
+              <AddPhotos />
             </PrivateRoute>
           }
         />
