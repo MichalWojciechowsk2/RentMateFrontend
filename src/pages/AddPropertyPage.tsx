@@ -3,6 +3,7 @@ import { createProperty, getCities, getDistricts } from "../api/property";
 import type { City, District } from "../types/Location";
 import { CITY_ID_TO_ENUM } from "../types/Location";
 import { useNavigate } from "react-router-dom";
+import { GrNext } from "react-icons/gr";
 
 const AddPropertyForm = () => {
   const [form, setForm] = useState({
@@ -48,7 +49,7 @@ const AddPropertyForm = () => {
     e.preventDefault();
 
     try {
-      await createProperty({
+      const newProperty = await createProperty({
         title: form.title.trim(),
         description: form.description.trim(),
         address: form.address.trim(),
@@ -61,7 +62,7 @@ const AddPropertyForm = () => {
         baseDeposit: parseFloat(form.baseDeposit),
       });
 
-      navigate("/properties");
+      navigate(`/${newProperty.id}/add-photos`);
     } catch (err) {
       console.error("Błąd przy dodawaniu mieszkania:", err);
     }
@@ -208,7 +209,7 @@ const AddPropertyForm = () => {
             type="submit"
             className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
           >
-            Dodaj mieszkanie
+            Dodaj zdjęcia <GrNext />
           </button>
         </div>
       </form>

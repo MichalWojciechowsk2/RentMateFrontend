@@ -55,9 +55,12 @@ export const GetPropertiesByOwnerId = async (
 
 export const createProperty = async (
   property: CreateProperty
-): Promise<void> => {
-  await api.post("/Property", property);
+): Promise<Property> => {
+  const response = await api.post("/Property", property);
+  return response.data;
 };
+
+export const;
 
 export const filter = async (filters: any): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property/filter", {
