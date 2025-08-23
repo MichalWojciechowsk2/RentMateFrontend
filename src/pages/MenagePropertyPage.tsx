@@ -11,6 +11,7 @@ const tabs = [
   { value: "property", label: "Mieszkanie" },
   { value: "offer", label: "Umowy wynajmu" },
   { value: "payments", label: "Rachunki" },
+  { value: "problems", label: "Problemy" },
 ];
 
 const MenagePropertyPage = () => {

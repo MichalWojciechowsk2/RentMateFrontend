@@ -43,3 +43,8 @@ export type CreateProperty = {
   basePrice: number;
   baseDeposit: number;
 };
+
+// export type PropertyImage = {
+//   PropertyId: number;
+//   images: List<>;
+// };
