@@ -4,6 +4,7 @@ import type {
   CreateProperty,
   PropertyEntity,
 } from "../types/Property";
+import { data, Form } from "react-router-dom";
 
 export const getAllActiveProperties = async (): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property");
@@ -60,7 +61,21 @@ export const createProperty = async (
   return response.data;
 };
 
-export const;
+export const uploadPropertyImages = async (
+  propertyId: number,
+  images: File[]
+): Promise<any> => {
+  const formData = new FormData();
+  images.forEach((file) => {
+    formData.append("images", file);
+  });
+  const response = await api.post(`/Property/${propertyId}/images`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
 
 export const filter = async (filters: any): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property/filter", {

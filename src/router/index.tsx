@@ -7,6 +7,7 @@ import RegisterPage from "../pages/RegisterPage";
 import PrivateRoute from "./PrivateRoute";
 import PropertiesPage from "../pages/PropertiesPage";
 import AddPropertyPage from "../pages/AddPropertyPage";
+import AddPhotos from "../pages/AddPhotos";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AddPropertyPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: ":propertyId/add-photo",
+        element: (
+          <PrivateRoute>
+            <AddPhotos />
           </PrivateRoute>
         ),
       },
