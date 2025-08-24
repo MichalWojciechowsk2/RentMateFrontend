@@ -28,7 +28,7 @@ const AddPhotos = () => {
     try {
       const filesToUpload = images.filter((img): img is File => img !== null);
       await uploadPropertyImages(Number(propertyId), filesToUpload);
-      navigate(`/properties/${propertyId}`);
+      navigate(`/my-properties/${propertyId}/menage`);
     } catch (err) {
       console.error("Błąd przy dodawaniu zdjęć:", err);
     }
@@ -44,20 +44,25 @@ const AddPhotos = () => {
           key={index}
           className="border rounded p-2 flex flex-col items-center justify-center"
         >
-          {img ? (
-            <img
-              src={URL.createObjectURL(img)}
-              alt={`Podgląd ${index + 1}`}
-              className="w-full h-32 object-cover rounded mb-2"
-            />
-          ) : (
-            <div className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 rounded mb-2">
-              Brak zdjęcia
-            </div>
-          )}
+          <label
+            htmlFor={`file-input-${index}`}
+            className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 rounded mb-2 cursor-pointer"
+          >
+            {img ? (
+              <img
+                src={URL.createObjectURL(img)}
+                alt={`Podgląd ${index + 1}`}
+                className="w-full h-full object-cover rounded"
+              />
+            ) : (
+              <span className="text-sm text-gray-500">Dodaj zdjęcie</span>
+            )}
+          </label>
           <input
+            id={`file-input-${index}`}
             type="file"
             accept="image/*"
+            className="hidden"
             onChange={(e) =>
               handleFileChange(index, e.target.files?.[0] || null)
             }
@@ -65,7 +70,13 @@ const AddPhotos = () => {
         </div>
       ))}
 
-      <div className="md:col-span-3 flex justify-end">
+      <div className="md:col-span-3 flex justify-between">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Wróć
+        </button>
         <button
           type="submit"
           className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
