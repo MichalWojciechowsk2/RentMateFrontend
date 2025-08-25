@@ -44,7 +44,8 @@ export type CreateProperty = {
   baseDeposit: number;
 };
 
-// export type PropertyImage = {
-//   PropertyId: number;
-//   images: List<>;
-// };
+export type PropertyImage = {
+  propertyId: number;
+  imageUrl: string;
+  isMainImage: boolean;
+};
