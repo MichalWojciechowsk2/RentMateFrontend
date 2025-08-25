@@ -27,7 +27,12 @@ const AddPhotos = () => {
 
     try {
       const filesToUpload = images.filter((img): img is File => img !== null);
-      await uploadPropertyImages(Number(propertyId), filesToUpload);
+
+      const orderedFiles = filesToUpload[0]
+        ? [filesToUpload[0], ...filesToUpload.slice(1)]
+        : filesToUpload;
+
+      await uploadPropertyImages(Number(propertyId), orderedFiles);
       navigate(`/my-properties/${propertyId}/menage`);
     } catch (err) {
       console.error("Błąd przy dodawaniu zdjęć:", err);
@@ -39,13 +44,37 @@ const AddPhotos = () => {
       onSubmit={handleSubmit}
       className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto"
     >
-      {images.map((img, index) => (
+      <div className="md:col-span-3 border rounded p-2 flex flex-col items-center justify-center">
+        <label
+          htmlFor="file-input-0"
+          className="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400 rounded mb-2 cursor-pointer"
+        >
+          {images[0] ? (
+            <img
+              src={URL.createObjectURL(images[0])}
+              alt="Podgląd głównego zdjęcia"
+              className="w-full h-full object-cover rounded"
+            />
+          ) : (
+            <span className="text-sm text-gray-500">Dodaj główne zdjęcie</span>
+          )}
+        </label>
+        <input
+          id="file-input-0"
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => handleFileChange(0, e.target.files?.[0] || null)}
+        />
+      </div>
+
+      {images.slice(1).map((img, index) => (
         <div
-          key={index}
+          key={index + 1}
           className="border rounded p-2 flex flex-col items-center justify-center"
         >
           <label
-            htmlFor={`file-input-${index}`}
+            htmlFor={`file-input-${index + 1}`}
             className="w-full h-32 bg-gray-100 flex items-center justify-center text-gray-400 rounded mb-2 cursor-pointer"
           >
             {img ? (
@@ -59,12 +88,12 @@ const AddPhotos = () => {
             )}
           </label>
           <input
-            id={`file-input-${index}`}
+            id={`file-input-${index + 1}`}
             type="file"
             accept="image/*"
             className="hidden"
             onChange={(e) =>
-              handleFileChange(index, e.target.files?.[0] || null)
+              handleFileChange(index + 1, e.target.files?.[0] || null)
             }
           />
         </div>
@@ -72,8 +101,9 @@ const AddPhotos = () => {
 
       <div className="md:col-span-3 flex justify-between">
         <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+          type="button"
+          onClick={() => navigate(-1)}
+          className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 transition"
         >
           Wróć
         </button>

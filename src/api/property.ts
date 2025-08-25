@@ -3,6 +3,7 @@ import type {
   Property,
   CreateProperty,
   PropertyEntity,
+  PropertyImage,
 } from "../types/Property";
 import { data, Form } from "react-router-dom";
 
@@ -74,6 +75,15 @@ export const uploadPropertyImages = async (
       "Content-Type": "multipart/form-data",
     },
   });
+  return response.data;
+};
+
+export const getMainImageByPropertyId = async (
+  propertyId: number
+): Promise<PropertyImage> => {
+  const response = await api.get<PropertyImage>(
+    `/Property/mainImage/${propertyId}`
+  );
   return response.data;
 };
 
