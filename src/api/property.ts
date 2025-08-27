@@ -82,7 +82,7 @@ export const getMainImageByPropertyId = async (
   propertyId: number
 ): Promise<PropertyImage> => {
   const response = await api.get<PropertyImage>(
-    `/Property/mainImage/${propertyId}`
+    `/Property/mainImageForProperty?propertyId=${propertyId}`
   );
   return response.data;
 };
