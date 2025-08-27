@@ -98,7 +98,7 @@ const PropertiesPage = () => {
       properties.map(async (prop) => {
         try {
           const image = await getMainImageByPropertyId(prop.id);
-          if (image) images[prop.id] = image.url;
+          if (image) images[prop.id] = image.imageUrl;
         } catch (err) {
           console.error(
             `Błąd pobierania zdjęcia dla propertyId=${prop.id}:`,
