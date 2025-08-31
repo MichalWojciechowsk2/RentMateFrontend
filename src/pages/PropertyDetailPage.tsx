@@ -1,6 +1,10 @@
 import { data, Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { GetPropertyById, GetPropertiesByOwnerId } from "../api/property";
+import {
+  GetPropertyById,
+  GetPropertiesByOwnerId,
+  getMainImageByPropertyId,
+} from "../api/property";
 import { getUserById } from "../api/users";
 import type { Property } from "../types/Property";
 import type { User } from "../types/User";
@@ -13,6 +17,7 @@ const PropertyDetailPage = () => {
   const [ownerNumberActive, setOwnerNumberActive] = useState(false);
   const [propertyOwnerOtherProperties, setPropertyOwnerOtherProperties] =
     useState<Property[] | null>(null);
+  const [mainImages, setMainImages] = useState<Record<number, string>>({});
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -27,6 +32,25 @@ const PropertyDetailPage = () => {
       setLoading(false);
     }
   };
+  const fetchMainImages = async (properties: Property[]) => {
+    const images: Record<number, string> = {};
+    await Promise.all(
+      properties.map(async (prop) => {
+        try {
+          const image = await getMainImageByPropertyId(prop.id);
+          if (image) images[prop.id] = image.imageUrl;
+        } catch (err) {
+          console.error(
+            `Błąd pobierania zdjęcia dla propertyId=${prop.id}:`,
+            err
+          );
+        }
+      })
+    );
+
+    setMainImages(images);
+  };
+
   const fetchOwnerOtherProperties = async (ownerId?: number) => {
     if (ownerId === undefined) return;
     setLoading(true);
@@ -40,6 +64,7 @@ const PropertyDetailPage = () => {
       setLoading(false);
     }
   };
+
   const fetchUser = async (ownerId: number) => {
     setLoading(true);
     try {
@@ -65,6 +90,14 @@ const PropertyDetailPage = () => {
       "Zaktualizowane oferty właściciela:",
       propertyOwnerOtherProperties
     );
+  }, [propertyOwnerOtherProperties]);
+  useEffect(() => {
+    if (
+      propertyOwnerOtherProperties &&
+      propertyOwnerOtherProperties.length > 0
+    ) {
+      fetchMainImages(propertyOwnerOtherProperties);
+    }
   }, [propertyOwnerOtherProperties]);
 
   if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
@@ -172,7 +205,15 @@ const PropertyDetailPage = () => {
                 <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
                   {/* Placeholder na zdjęcie */}
                   <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                    Zdj
+                    {mainImages[p.id] ? (
+                      <img
+                        src={mainImages[p.id]}
+                        alt={p.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      "Zdj"
+                    )}
                   </div>
 
                   {/* Szczegóły */}
