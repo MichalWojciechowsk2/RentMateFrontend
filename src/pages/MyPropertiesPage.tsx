@@ -2,11 +2,32 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import type { Property } from "../types/Property";
 import { GetPropertiesByOwnerId } from "../api/property";
+import { getMainImageByPropertyId } from "../api/property";
 import { Link } from "react-router-dom";
 
 const MyPropertiesPage = () => {
   const { currentUser } = useAuth();
   const [properties, setProperties] = useState<Property[]>([]);
+  const [mainImages, setMainImages] = useState<Record<number, string>>({});
+
+  const fetchMainImages = async (properties: Property[]) => {
+    const images: Record<number, string> = {};
+    await Promise.all(
+      properties.map(async (prop) => {
+        try {
+          const image = await getMainImageByPropertyId(prop.id);
+          if (image) images[prop.id] = image.imageUrl;
+        } catch (err) {
+          console.error(
+            `Błąd pobierania zdjęcia dla propertyId=${prop.id}:`,
+            err
+          );
+        }
+      })
+    );
+
+    setMainImages(images);
+  };
 
   useEffect(() => {
     if (currentUser?.id) {
@@ -17,6 +38,11 @@ const MyPropertiesPage = () => {
         });
     }
   }, [currentUser]);
+  useEffect(() => {
+    if (properties.length > 0) {
+      fetchMainImages(properties);
+    }
+  }, [properties]);
 
   return (
     <ul>
@@ -26,7 +52,15 @@ const MyPropertiesPage = () => {
             <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
               {/* Placeholder na zdjęcie */}
               <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                Zdj
+                {mainImages[property.id] ? (
+                  <img
+                    src={mainImages[property.id]}
+                    alt={property.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  "Zdj"
+                )}
               </div>
 
               {/* Szczegóły */}
