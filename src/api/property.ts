@@ -62,31 +62,6 @@ export const createProperty = async (
   return response.data;
 };
 
-export const uploadPropertyImages = async (
-  propertyId: number,
-  images: File[]
-): Promise<any> => {
-  const formData = new FormData();
-  images.forEach((file) => {
-    formData.append("images", file);
-  });
-  const response = await api.post(`/Property/${propertyId}/images`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
-};
-
-export const getMainImageByPropertyId = async (
-  propertyId: number
-): Promise<PropertyImage> => {
-  const response = await api.get<PropertyImage>(
-    `/Property/mainImageForProperty?propertyId=${propertyId}`
-  );
-  return response.data;
-};
-
 export const filter = async (filters: any): Promise<Property[]> => {
   const response = await api.get<Property[]>("/Property/filter", {
     params: filters,
@@ -107,5 +82,38 @@ export const getDistricts = async (
   const response = await api.get<
     { id: number; name: string; enumName: string }[]
   >(`/Property/districts/${cityId}`);
+  return response.data;
+};
+
+export const uploadPropertyImages = async (
+  propertyId: number,
+  images: File[]
+): Promise<any> => {
+  const formData = new FormData();
+  images.forEach((file) => {
+    formData.append("images", file);
+  });
+  const response = await api.post(`/Property/${propertyId}/images`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+export const getMainImageByPropertyId = async (
+  propertyId: number
+): Promise<PropertyImage> => {
+  const response = await api.get<PropertyImage>(
+    `/Property/mainImageForProperty?propertyId=${propertyId}`
+  );
+  return response.data;
+};
+
+export const getImagesForPropertyUrl = async (
+  propertyId: number
+): Promise<PropertyImage[]> => {
+  const response = await api.get<PropertyImage[]>(
+    `/Property/allImagesForProperty?propertyId=${propertyId}`
+  );
   return response.data;
 };
