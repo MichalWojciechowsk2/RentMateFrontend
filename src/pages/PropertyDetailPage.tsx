@@ -4,13 +4,14 @@ import {
   GetPropertyById,
   GetPropertiesByOwnerId,
   getMainImageByPropertyId,
+  getImagesForPropertyUrl,
 } from "../api/property";
 import { getUserById } from "../api/users";
-import type { Property } from "../types/Property";
+import type { Property, PropertyImage } from "../types/Property";
 import type { User } from "../types/User";
 
 const PropertyDetailPage = () => {
-  const [laoding, setLoading] = useState(Boolean);
+  const [loading, setLoading] = useState<boolean>(false);
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
   const [propertyOwner, setPropertyOwner] = useState<User | null>(null);
@@ -18,6 +19,8 @@ const PropertyDetailPage = () => {
   const [propertyOwnerOtherProperties, setPropertyOwnerOtherProperties] =
     useState<Property[] | null>(null);
   const [mainImages, setMainImages] = useState<Record<number, string>>({});
+  const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
+  const [otherImages, setOtherImages] = useState<PropertyImage[]>([]);
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -32,6 +35,21 @@ const PropertyDetailPage = () => {
       setLoading(false);
     }
   };
+
+  const fetchImagesForMainProperty = async (id?: number) => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const images = await getImagesForPropertyUrl(id);
+      setMainImage(images.find((img) => img.isMainImage) || null);
+      setOtherImages(images.filter((img) => !img.isMainImage));
+    } catch (err) {
+      console.error("Błąd pobierania zdjęć:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchMainImages = async (properties: Property[]) => {
     const images: Record<number, string> = {};
     await Promise.all(
@@ -47,7 +65,6 @@ const PropertyDetailPage = () => {
         }
       })
     );
-
     setMainImages(images);
   };
 
@@ -79,8 +96,13 @@ const PropertyDetailPage = () => {
   };
 
   useEffect(() => {
-    if (id) fetchProperty(Number(id));
+    const mainPropertyId = Number(id);
+    if (id) {
+      fetchProperty(mainPropertyId);
+      fetchImagesForMainProperty(mainPropertyId);
+    }
   }, [id]);
+
   useEffect(() => {
     if (property?.ownerId) fetchUser(property.ownerId);
   }, [property?.ownerId]);
@@ -100,7 +122,7 @@ const PropertyDetailPage = () => {
     }
   }, [propertyOwnerOtherProperties]);
 
-  if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
+  if (loading) return <p className="p-6">Ładowanie danych oferty...</p>;
 
   return (
     <div className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl">
@@ -111,10 +133,41 @@ const PropertyDetailPage = () => {
       </div>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 animate-fade-in mb-30">
         <div className="lg:col-span-2 space-y-10">
-          <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
-            <p className="text-gray-600 text-xl font-medium">
-              Miejsce na zdjęcie
-            </p>
+          <div className="w-full">
+            {/* Główne zdjęcie */}
+            {mainImage ? (
+              <img
+                src={mainImage.imageUrl}
+                alt="Główne zdjęcie"
+                className="w-full aspect-video object-cover rounded-lg shadow"
+              />
+            ) : loading ? (
+              <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
+                <p className="text-gray-600 text-xl font-medium">
+                  Ładowanie zdjęcia...
+                </p>
+              </div>
+            ) : (
+              <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
+                <p className="text-gray-600 text-xl font-medium">
+                  Brak zdjęcia
+                </p>
+              </div>
+            )}
+
+            {/* Pozostałe zdjęcia */}
+            {otherImages.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {otherImages.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img.imageUrl}
+                    alt={`Zdjęcie ${index + 1}`}
+                    className="aspect-video object-cover rounded-lg shadow"
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="text-lg text-gray-700 font-medium">
