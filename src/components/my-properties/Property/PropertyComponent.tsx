@@ -4,11 +4,13 @@ import {
   UpdateIsActive,
   GetPropertyEntityById,
   UpdateProperty,
+  getImagesForPropertyUrl,
 } from "../../../api/property";
 import type {
   PropertyEntity,
   CreateProperty,
   Property,
+  PropertyImage,
 } from "../../../types/Property";
 import EditPropertyForm from "./EditPropertyForm";
 import { FaCopy } from "react-icons/fa6";
@@ -18,11 +20,13 @@ type Props = {
 };
 
 const PropertyComponent = ({ onRefetch }: Props) => {
-  const [laoding, setLoading] = useState(Boolean);
+  const [loading, setLoading] = useState(Boolean);
   const { id } = useParams();
   const [property, setProperty] = useState<PropertyEntity | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
+  const [otherImages, setOtherImages] = useState<PropertyImage[]>([]);
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -33,6 +37,20 @@ const PropertyComponent = ({ onRefetch }: Props) => {
       setProperty(data);
     } catch (err) {
       console.error("Błąd wczytywania oferty", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchImagesForMainProperty = async (id?: number) => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const images = await getImagesForPropertyUrl(id);
+      setMainImage(images.find((img) => img.isMainImage) || null);
+      setOtherImages(images.filter((img) => !img.isMainImage));
+    } catch (err) {
+      console.error("Błąd pobierania zdjęć:", err);
     } finally {
       setLoading(false);
     }
@@ -74,7 +92,11 @@ const PropertyComponent = ({ onRefetch }: Props) => {
   };
 
   useEffect(() => {
-    if (id) fetchProperty(Number(id));
+    const propertyId = Number(id);
+    if (id) {
+      fetchProperty(propertyId);
+      fetchImagesForMainProperty(propertyId);
+    }
   }, [id]);
 
   const copyLink = () => {
@@ -85,7 +107,7 @@ const PropertyComponent = ({ onRefetch }: Props) => {
     });
   };
 
-  if (laoding) return <p className="p-6">Ładowanie danych oferty...</p>;
+  if (loading) return <p className="p-6">Ładowanie danych oferty...</p>;
 
   if (isEditing && property) {
     return (
@@ -152,12 +174,42 @@ const PropertyComponent = ({ onRefetch }: Props) => {
       )}
       <div className="max-w-7xl mx-auto gap-12 animate-fade-in mb-30">
         <div className="lg:col-span-2 space-y-10 mb-20">
-          <div className="bg-gray-300 w-[75%] aspect-video flex items-center justify-center rounded-lg mx-auto">
-            <p className="text-gray-600 text-xl font-medium">
-              Miejsce na zdjęcie
-            </p>
-          </div>
+          <div className="w-full">
+            {/* Główne zdjęcie */}
+            {mainImage ? (
+              <img
+                src={mainImage.imageUrl}
+                alt="Główne zdjęcie"
+                className="w-full aspect-video object-cover rounded-lg shadow"
+              />
+            ) : loading ? (
+              <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
+                <p className="text-gray-600 text-xl font-medium">
+                  Ładowanie zdjęcia...
+                </p>
+              </div>
+            ) : (
+              <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
+                <p className="text-gray-600 text-xl font-medium">
+                  Brak zdjęcia
+                </p>
+              </div>
+            )}
 
+            {/* Pozostałe zdjęcia */}
+            {otherImages.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {otherImages.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img.imageUrl}
+                    alt={`Zdjęcie ${index + 1}`}
+                    className="aspect-video object-cover rounded-lg shadow"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
           <div className="text-lg text-gray-700 font-medium">
             📍 {property?.address}, {property?.city}, {property?.district}
           </div>
