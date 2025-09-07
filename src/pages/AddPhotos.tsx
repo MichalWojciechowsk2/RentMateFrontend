@@ -102,7 +102,7 @@ const AddPhotos = () => {
       <div className="md:col-span-3 flex justify-between">
         <button
           type="button"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(`/${propertyId}/edit-propertyCreate`)}
           className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 transition"
         >
           Wróć

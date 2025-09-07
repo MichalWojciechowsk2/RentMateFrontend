@@ -5,8 +5,8 @@ import {
   updateOfferStatus,
   downloadOfferContractPdf,
 } from "../../api/offer";
-import { type Property } from "../../types/Property";
-import { GetPropertyById } from "../../api/property";
+import { type Property, type PropertyImage } from "../../types/Property";
+import { GetPropertyById, getMainImageByPropertyId } from "../../api/property";
 import { Link } from "react-router-dom";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
@@ -15,8 +15,10 @@ type MyOfferComponentProps = {
   currentUserId?: number;
 };
 const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [offers, setOffers] = useState<Offer[] | null>(null);
   const [property, setProperty] = useState<Property | null>(null);
+  const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
 
   useEffect(() => {
     if (currentUserId) {
@@ -52,11 +54,17 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
   const fetchPropertyIfOfferAccepted = async (id?: number) => {
     if (id === undefined) return;
     try {
+      setLoading(true);
       let data;
+      let image;
       data = await GetPropertyById(id);
+      image = await getMainImageByPropertyId(id);
       setProperty(data);
+      setMainImage(image);
     } catch (err) {
       console.error("Błąd wczytywania oferty", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,6 +99,7 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
   }, [acceptedOffer]);
 
   if (!offers || offers.length === 0) return <div>Brak ofert</div>;
+  if (loading) return <p className="p-6">Ładowanie...</p>;
 
   return (
     <div>
@@ -131,7 +140,15 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
               <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
                 {/* Placeholder na zdjęcie */}
                 <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                  Zdj
+                  {mainImage ? (
+                    <img
+                      src={mainImage.imageUrl}
+                      alt={property?.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    "Zdj"
+                  )}
                 </div>
 
                 {/* Szczegóły */}

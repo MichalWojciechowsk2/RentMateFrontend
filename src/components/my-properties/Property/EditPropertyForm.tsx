@@ -1,14 +1,26 @@
 import { useState, useEffect } from "react";
-import type { CreateProperty, PropertyEntity } from "../../../types/Property";
+import type {
+  CreateProperty,
+  PropertyEntity,
+  PropertyImage,
+} from "../../../types/Property";
 import PropertyDetailPage from "../../../pages/PropertyDetailPage";
 
 type Props = {
   property: CreateProperty;
+  mainImg: PropertyImage | null;
+  otherImg: PropertyImage[];
   onSave: (updated: CreateProperty) => void;
   onCancel: () => void;
 };
 
-const EditPropertyForm = ({ property, onSave, onCancel }: Props) => {
+const EditPropertyForm = ({
+  property,
+  mainImg,
+  otherImg,
+  onSave,
+  onCancel,
+}: Props) => {
   const [form, setForm] = useState<CreateProperty>(property);
 
   useEffect(() => {
@@ -41,10 +53,33 @@ const EditPropertyForm = ({ property, onSave, onCancel }: Props) => {
       className="p-8 mx-auto bg-[#F1F5F9] min-h-[1000px] shadow-lg rounded-xl max-w-7xl mt-22"
     >
       <div className="space-y-10 mb-20">
-        <div className="bg-gray-300 w-[75%] aspect-video flex items-center justify-center rounded-lg mx-auto">
-          <p className="text-gray-600 text-xl font-medium">
-            Miejsce na zdjęcie
-          </p>
+        <div className="w-full">
+          {/* Główne zdjęcie */}
+          {mainImg ? (
+            <img
+              src={mainImg.imageUrl}
+              alt="Główne zdjęcie"
+              className="w-full aspect-video object-cover rounded-lg shadow"
+            />
+          ) : (
+            <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
+              <p className="text-gray-600 text-xl font-medium">Brak zdjęcia</p>
+            </div>
+          )}
+
+          {/* Pozostałe zdjęcia */}
+          {otherImg.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 mt-4">
+              {otherImg.map((img, index) => (
+                <img
+                  key={index}
+                  src={img.imageUrl}
+                  alt={`Zdjęcie ${index + 1}`}
+                  className="aspect-video object-cover rounded-lg shadow"
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-800">
@@ -55,7 +90,7 @@ const EditPropertyForm = ({ property, onSave, onCancel }: Props) => {
               name="title"
               value={form.title}
               onChange={handleChange}
-              className="border p-2 rounded w-full"
+              className="bg-white border p-2 rounded w-full"
               required
             />
           </div>
@@ -66,7 +101,7 @@ const EditPropertyForm = ({ property, onSave, onCancel }: Props) => {
               name="address"
               value={form.address}
               onChange={handleChange}
-              className="border p-2 rounded w-full"
+              className="bg-white border p-2 rounded w-full"
               required
             />
           </div>

@@ -122,6 +122,11 @@ const PropertyDetailPage = () => {
     }
   }, [propertyOwnerOtherProperties]);
 
+  const otherProperties =
+    propertyOwnerOtherProperties?.filter(
+      (p) => property && p.id != property.id
+    ) ?? [];
+
   if (loading) return <p className="p-6">Ładowanie danych oferty...</p>;
 
   return (
@@ -200,7 +205,6 @@ const PropertyDetailPage = () => {
             </div>
           </div>
         </div>
-
         {/* Prawa kolumna */}
         <div className="space-y-6">
           <div className="bg-white shadow-md rounded-lg p-6">
@@ -246,48 +250,52 @@ const PropertyDetailPage = () => {
         </div>
       </div>
 
-      <div className="text-black">
-        Inne oferty od {propertyOwner?.firstName} {propertyOwner?.lastName}
-      </div>
-      <div>
-        {propertyOwnerOtherProperties
-          ?.filter((p) => property && p.id !== property.id)
-          .map((p) => (
-            <li key={p.id}>
-              <Link to={`/property/${p.id}`}>
-                <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
-                  {/* Placeholder na zdjęcie */}
-                  <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                    {mainImages[p.id] ? (
-                      <img
-                        src={mainImages[p.id]}
-                        alt={p.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      "Zdj"
-                    )}
-                  </div>
+      {otherProperties?.length > 0 && (
+        <>
+          <div className="text-black">
+            Inne oferty od {propertyOwner?.firstName} {propertyOwner?.lastName}
+          </div>
+          <div>
+            {propertyOwnerOtherProperties
+              ?.filter((p) => property && p.id !== property.id)
+              .map((p) => (
+                <li key={p.id}>
+                  <Link to={`/property/${p.id}`}>
+                    <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
+                      {/* Placeholder na zdjęcie */}
+                      <div className="w-full md:w-48 h-48 bg-gray-200 flex items-center justify-center text-gray-500">
+                        {mainImages[p.id] ? (
+                          <img
+                            src={mainImages[p.id]}
+                            alt={p.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          "Zdj"
+                        )}
+                      </div>
 
-                  {/* Szczegóły */}
-                  <div className="flex flex-col justify-between p-4 w-full">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                      {p.title}
-                    </h2>
-                    <p className="text-gray-600 mb-1 line-clamp-2">
-                      {p.description}
-                    </p>
-                    <p className="text-sm text-gray-500">📍 {p.address}</p>
-                    <div className="flex justify-between mt-2 text-sm text-gray-700">
-                      <span>🛏️ {p.roomCount} pokoi</span>
-                      <span>💰 {p.basePrice} zł/mc</span>
+                      {/* Szczegóły */}
+                      <div className="flex flex-col justify-between p-4 w-full">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                          {p.title}
+                        </h2>
+                        <p className="text-gray-600 mb-1 line-clamp-2">
+                          {p.description}
+                        </p>
+                        <p className="text-sm text-gray-500">📍 {p.address}</p>
+                        <div className="flex justify-between mt-2 text-sm text-gray-700">
+                          <span>🛏️ {p.roomCount} pokoi</span>
+                          <span>💰 {p.basePrice} zł/mc</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
-            </li>
-          ))}
-      </div>
+                  </Link>
+                </li>
+              ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -12,6 +12,7 @@ import PropertyDetailPage from "./pages/PropertyDetailPage";
 import RegisterPage from "./pages/RegisterPage";
 import MyRentalPage from "./pages/MyRentalPage";
 import MenagePropertyPage from "./pages/MenagePropertyPage";
+import EditPropertyCreateForm from "./pages/EditPropretyWhileCreate";
 import AddPhotos from "./pages/AddPhotos";
 
 const App = () => {
@@ -54,6 +55,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <AddPhotos />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path=":propertyId/edit-propertyCreate"
+          element={
+            <PrivateRoute>
+              <EditPropertyCreateForm />
             </PrivateRoute>
           }
         />
