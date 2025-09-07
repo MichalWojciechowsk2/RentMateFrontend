@@ -113,6 +113,8 @@ const PropertyComponent = ({ onRefetch }: Props) => {
     return (
       <EditPropertyForm
         property={property}
+        mainImg={mainImage}
+        otherImg={otherImages}
         onSave={handleSave}
         onCancel={handleCancel}
       />
