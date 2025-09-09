@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-  getAllActiveProperties,
+  // getAllActiveProperties,
   filter,
   getCities,
   getDistricts,
   getMainImageByPropertyId,
+  getPagedProperties,
 } from "../api/property";
 import type { Property } from "../types/Property";
 import type { City, District } from "../types/Location";
@@ -17,6 +18,13 @@ interface Filters {
   PriceTo?: number;
   Rooms?: number;
 }
+export interface PagedResult<T> {
+  totalItems: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  items: T[];
+}
 
 const PropertiesPage = () => {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -25,6 +33,9 @@ const PropertiesPage = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [mainImages, setMainImages] = useState<Record<number, string>>({});
+  const [pageNumber, setPageNumber] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 2;
 
   useEffect(() => {
     getCities()
@@ -43,16 +54,38 @@ const PropertiesPage = () => {
     }
   }, [filters.City]);
 
-  const fetchProperties = async (filters?: Filters) => {
+  // const fetchProperties = async (filters?: Filters) => {
+  //   setLoading(true);
+  //   try {
+  //     let data;
+  //     if (filters && Object.keys(filters).length > 0) {
+  //       data = await filter(filters);
+  //     } else {
+  //       data = await getAllActiveProperties();
+  //     }
+  //     setProperties(data);
+  //   } catch (err) {
+  //     console.error("Błąd ładowania nieruchomości: ", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchProperties();
+  // }, []);
+  const fetchProperties = async (filters?: Filters, page: number = 1) => {
     setLoading(true);
     try {
-      let data;
+      let data: PagedResult<Property>;
       if (filters && Object.keys(filters).length > 0) {
-        data = await filter(filters);
+        data = await getPagedProperties(page, pageSize);
       } else {
-        data = await getAllActiveProperties();
+        data = await getPagedProperties(page, pageSize);
       }
-      setProperties(data);
+      setProperties(data.items);
+      setPageNumber(data.pageNumber);
+      setTotalPages(data.totalPages);
     } catch (err) {
       console.error("Błąd ładowania nieruchomości: ", err);
     } finally {
@@ -61,7 +94,7 @@ const PropertiesPage = () => {
   };
 
   useEffect(() => {
-    fetchProperties();
+    fetchProperties({}, 1);
   }, []);
 
   const handleFilterChange = (
@@ -253,6 +286,60 @@ const PropertiesPage = () => {
           </li>
         ))}
       </ul>
+      {/* Paginacja */}
+      <div className="flex justify-center gap-2 mt-4">
+        {/* Pierwsza strona */}
+        {pageNumber > 2 && (
+          <button
+            onClick={() => fetchProperties(filters, 1)}
+            className="px-3 py-1 rounded bg-gray-400 hover:bg-gray-300"
+          >
+            1
+          </button>
+        )}
+
+        {/* Pominięcie (…)
+      jeśli aktualna strona > 3 */}
+        {pageNumber > 3 && <span className="px-2 py-1">…</span>}
+
+        {/* Poprzednia strona */}
+        {pageNumber > 1 && (
+          <button
+            onClick={() => fetchProperties(filters, pageNumber - 1)}
+            className="px-3 py-1 rounded bg-gray-400 hover:bg-gray-300"
+          >
+            {pageNumber - 1}
+          </button>
+        )}
+
+        {/* Aktualna strona */}
+        <button className="px-3 py-1 rounded bg-blue-600 text-white">
+          {pageNumber}
+        </button>
+
+        {/* Następna strona */}
+        {pageNumber < totalPages && (
+          <button
+            onClick={() => fetchProperties(filters, pageNumber + 1)}
+            className="px-3 py-1 rounded bg-gray-400 hover:bg-gray-300"
+          >
+            {pageNumber + 1}
+          </button>
+        )}
+
+        {/* Pominięcie (…) przed ostatnią stroną */}
+        {pageNumber < totalPages - 2 && <span className="px-2 py-1">…</span>}
+
+        {/* Ostatnia strona */}
+        {pageNumber < totalPages - 1 && (
+          <button
+            onClick={() => fetchProperties(filters, totalPages)}
+            className="px-3 py-1 rounded bg-gray-400 hover:bg-gray-300"
+          >
+            {totalPages}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

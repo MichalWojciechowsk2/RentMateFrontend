@@ -5,12 +5,25 @@ import type {
   PropertyEntity,
   PropertyImage,
 } from "../types/Property";
+
+import type { PagedResult } from "../pages/PropertiesPage";
 import { data, Form } from "react-router-dom";
 
-export const getAllActiveProperties = async (): Promise<Property[]> => {
-  const response = await api.get<Property[]>("/Property");
+// export const getAllActiveProperties = async (): Promise<Property[]> => {
+//   const response = await api.get<Property[]>("/Property");
+//   return response.data;
+// };
+
+export const getPagedProperties = async (
+  pageNumber: number,
+  pageSize: number
+): Promise<PagedResult<Property>> => {
+  const response = await api.get<PagedResult<Property>>(
+    `/Property?pageNumber=${pageNumber}&pageSize=${pageSize}`
+  );
   return response.data;
 };
+
 export const GetPropertyById = async (id: number): Promise<Property> => {
   const response = await api.get<Property>(`Property/getPropertyById?id=${id}`);
   return response.data;
