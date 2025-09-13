@@ -7,6 +7,8 @@ export type User = {
   lastName: string;
   phoneNumber: string;
   role: string;
+  aboutMe: string;
+  photoUrl: string;
 };
 
 export type LoginUser = {

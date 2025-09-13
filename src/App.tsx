@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
 import PrivateRoute from "./router/PrivateRoute";
 import AppLayout from "./layouts/AppLayout";
 import PropertiesPage from "./pages/PropertiesPage";
@@ -67,10 +67,10 @@ const App = () => {
           }
         />
         <Route
-          path="dashboard"
+          path="profile"
           element={
             <PrivateRoute>
-              <DashboardPage />
+              <ProfilePage />
             </PrivateRoute>
           }
         />
