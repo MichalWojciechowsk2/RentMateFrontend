@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
-import DashboardPage from "../pages/DashboardPage";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
@@ -8,6 +7,7 @@ import PrivateRoute from "./PrivateRoute";
 import PropertiesPage from "../pages/PropertiesPage";
 import AddPropertyPage from "../pages/AddPropertyPage";
 import AddPhotos from "../pages/AddPhotos";
+import ProfilePage from "../pages/ProfilePage";
 
 export const router = createBrowserRouter([
   {
@@ -35,10 +35,10 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "dashboard",
+        path: "profile",
         element: (
           <PrivateRoute>
-            <DashboardPage />
+            <ProfilePage />
           </PrivateRoute>
         ),
       },

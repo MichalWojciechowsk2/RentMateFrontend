@@ -22,7 +22,7 @@ const LoginPage = () => {
       console.log(
         `Udało się połączyć z api. Email: ${email}, hasło:${password}`
       );
-      navigate("/dashboard");
+      navigate("/profile");
     } catch {
       setError("Nieprawidłowy login lub hasło.");
     } finally {

@@ -39,7 +39,7 @@ const NavBar: React.FC = () => {
         </Link>
         {user && <Link to="/my-properties">Moje mieszkania</Link>}
         {user && <Link to="/my-rental">Mój wynajem</Link>}
-        {user && <Link to="/dashboard"> Hello {user.email}</Link>}
+        {user && <Link to="/profile"> Hello {user.email}</Link>}
       </div>
     </nav>
   );
