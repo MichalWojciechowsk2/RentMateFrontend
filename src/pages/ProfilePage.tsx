@@ -6,6 +6,7 @@ import ProfileSettingsButtons from "../components/profile/ProfileSettingsButtons
 const ProfilePage = () => {
   const { currentUser: user, logout } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
+  const [activeAction, setActiveAction] = useState<string | null>(null);
 
   if (!user) {
     return (
@@ -15,6 +16,11 @@ const ProfilePage = () => {
       </div>
     );
   }
+  const handleSelect = (action: string) => {
+    setActiveAction(action);
+    setShowSettings(false);
+  };
+  const closeModal = () => setActiveAction(null);
 
   return (
     <div className="p-6 flex flex-col items-center">
@@ -33,7 +39,7 @@ const ProfilePage = () => {
 
             {showSettings && (
               <div className="absolute right-0 mt-0 bg-white shadow-md rounded-lg p-2 z-50">
-                <ProfileSettingsButtons user={user} />
+                <ProfileSettingsButtons user={user} onSelect={handleSelect} />
               </div>
             )}
           </div>
@@ -75,6 +81,46 @@ const ProfilePage = () => {
           Wyloguj się
         </button>
       </div>
+
+      {/* MODALE DO ZMIANY PROFILU------------------------------------*/}
+      {/* ZMIANA ZDJĘCIA PROFILOWEGO */}
+      {activeAction === "changePhoto" && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">
+              Zmień zdjęcie profilowe
+            </h2>
+            {/* formularz do zmiany zdjęcia */}
+            <button onClick={closeModal} className="mt-4 text-red-500">
+              Zamknij
+            </button>
+          </div>
+        </div>
+      )}
+      {/* ZMIANA SEKCJI O MNIE */}
+      {activeAction === "changeAboutMe" && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Sekcja "O mnie"</h2>
+            {/* formularz do zmiany/dodania aboutMe */}
+            <button onClick={closeModal} className="mt-4 text-red-500">
+              Zamknij
+            </button>
+          </div>
+        </div>
+      )}
+      {/* ZMIANA NUMERU TELEFONU */}
+      {activeAction === "changePhoneNumber" && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Zmień numer telefonu</h2>
+            {/* formularz do zmiany telefonu */}
+            <button onClick={closeModal} className="mt-4 text-red-500">
+              Zamknij
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
