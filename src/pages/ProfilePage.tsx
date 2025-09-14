@@ -22,6 +22,10 @@ const ProfilePage = () => {
   };
   const closeModal = () => setActiveAction(null);
 
+  const handleSubmitAboutMe = () => {};
+  const handleSumbitPhoneNumber = () => {};
+  const handleSubmitUserPhoto = () => {};
+
   return (
     <div className="p-6 flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-6">Twój profil</h1>
@@ -85,39 +89,95 @@ const ProfilePage = () => {
       {/* MODALE DO ZMIANY PROFILU------------------------------------*/}
       {/* ZMIANA ZDJĘCIA PROFILOWEGO */}
       {activeAction === "changePhoto" && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-[#1b2947] bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl font-semibold mb-4 text-black mx-auto">
               Zmień zdjęcie profilowe
             </h2>
             {/* formularz do zmiany zdjęcia */}
-            <button onClick={closeModal} className="mt-4 text-red-500">
-              Zamknij
-            </button>
+            <img
+              src={user.photoUrl}
+              alt="Profil"
+              className="w-32 h-32 rounded-full object-cover mb-4 shadow mx-auto mb-4"
+            />
+            <div className="flex justify-center space-x-2 mt-4">
+              <button
+                onSubmit={handleSubmitUserPhoto}
+                className="text-white bg-blue-600 px-4 py-2 rounded"
+              >
+                Dodaj
+              </button>
+              <button
+                onClick={closeModal}
+                className="text-gray-700 bg-gray-200 px-4 py-2 rounded"
+              >
+                Zamknij
+              </button>
+            </div>
           </div>
         </div>
       )}
       {/* ZMIANA SEKCJI O MNIE */}
       {activeAction === "changeAboutMe" && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Sekcja "O mnie"</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-[#1b2947] bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg min-w-200">
             {/* formularz do zmiany/dodania aboutMe */}
-            <button onClick={closeModal} className="mt-4 text-red-500">
-              Zamknij
-            </button>
+            <h2 className="text-xl font-semibold mb-4 text-black">
+              Sekcja "O mnie"
+            </h2>
+            <form onSubmit={handleSubmitAboutMe}>
+              <textarea
+                name="aboutMe"
+                defaultValue={user.aboutMe || ""}
+                className="border border-black rounded w-full p-2 h-62 text-black"
+              />
+              <button
+                type="submit"
+                className="mt-4 text-gray-200 mr-2 bg-blue-600"
+              >
+                Potwierdź
+              </button>
+              <button
+                type="button"
+                onClick={closeModal}
+                className="mt-4 text-gray-200"
+              >
+                Zamknij
+              </button>
+            </form>
           </div>
         </div>
       )}
       {/* ZMIANA NUMERU TELEFONU */}
       {activeAction === "changePhoneNumber" && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Zmień numer telefonu</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-[#1b2947] bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg min-w-100 h-50">
+            <h2 className="text-xl font-semibold mb-4 text-black">
+              Zmień numer telefonu
+            </h2>
             {/* formularz do zmiany telefonu */}
-            <button onClick={closeModal} className="mt-4 text-red-500">
-              Zamknij
-            </button>
+            <form onSubmit={handleSumbitPhoneNumber}>
+              <textarea
+                name="phoneNumber"
+                // value={form.description}
+                // onChange={handleChange}
+                defaultValue={user.phoneNumber || ""}
+                className="border border-black rounded w-full p-2 h-12 text-black"
+              />
+              <button
+                type="submit"
+                className="mt-4 text-gray-200 mr-2 bg-blue-600"
+              >
+                Potwierdź
+              </button>
+              <button
+                onClick={closeModal}
+                type="button"
+                className="mt-4 text-gray-200"
+              >
+                Zamknij
+              </button>
+            </form>
           </div>
         </div>
       )}
