@@ -11,6 +11,7 @@ type AuthContextType = {
   token: string | null;
   login: (data: LoginUser) => Promise<void>;
   register: (data: RegisterUser) => Promise<void>;
+  refreshUser: () => Promise<void>;
   logout: () => void;
 };
 
@@ -56,6 +57,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const refreshUser = async () => {
+    if (!token) return;
+    try {
+      const user = await getCurrentUserApi();
+      setCurrentUser(user);
+    } catch (err) {
+      console.error("Failed to refresh user:", err);
+    }
+  };
+
   const logout = () => {
     setCurrentUser(null);
     setToken(null);
@@ -65,7 +76,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ currentUser: currentUser, token, login, register, logout }}
+      value={{
+        currentUser: currentUser,
+        token,
+        login,
+        register,
+        refreshUser,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
