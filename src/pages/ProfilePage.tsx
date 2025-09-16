@@ -1,12 +1,16 @@
 import { useAuth } from "../context/AuthContext";
 import { IoIosSettings } from "react-icons/io";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProfileSettingsButtons from "../components/profile/ProfileSettingsButtons";
+import { uploadUserPhoto, getUserPhoto } from "../api/users";
+
+//Obsłużyć zmiane aboutMe i telephone
 
 const ProfilePage = () => {
-  const { currentUser: user, logout } = useAuth();
+  const { currentUser: user, logout, refreshUser } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  const [userPhotoUrl, setUserPhotoUrl] = useState<string | null>(null);
 
   if (!user) {
     return (
@@ -22,9 +26,42 @@ const ProfilePage = () => {
   };
   const closeModal = () => setActiveAction(null);
 
+  const fetchUserPhoto = async () => {
+    try {
+      const data = await getUserPhoto();
+      setUserPhotoUrl(data);
+      console.log(`To jest url ${data}`);
+    } catch (error) {
+      console.error("Failed to fetch user photo:", error);
+    }
+  };
+
   const handleSubmitAboutMe = () => {};
   const handleSumbitPhoneNumber = () => {};
-  const handleSubmitUserPhoto = () => {};
+  const handleSubmitUserPhoto = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fileInput = e.currentTarget.elements.namedItem(
+      "photo"
+    ) as HTMLInputElement;
+    if (!fileInput.files || fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const result = await uploadUserPhoto(file);
+      setUserPhotoUrl(result.imageUrl || result);
+      closeModal();
+      fetchUserPhoto();
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserPhoto();
+  }, []);
 
   return (
     <div className="p-6 flex flex-col items-center">
@@ -49,7 +86,10 @@ const ProfilePage = () => {
           </div>
 
           <img
-            src={user.photoUrl}
+            src={
+              userPhotoUrl ||
+              "https://localhost:7281/uploads/UserPhoto/defaultPersonPhoto.png"
+            }
             alt="Profil"
             className="w-32 h-32 rounded-full object-cover mb-4 shadow"
           />
@@ -89,31 +129,53 @@ const ProfilePage = () => {
       {/* MODALE DO ZMIANY PROFILU------------------------------------*/}
       {/* ZMIANA ZDJĘCIA PROFILOWEGO */}
       {activeAction === "changePhoto" && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#1b2947] bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 text-black mx-auto">
+        <div className="fixed inset-0 flex items-center justify-center bg-[#1b2947] bg-opacity-80 z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center">
+            {/* Nagłówek */}
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
               Zmień zdjęcie profilowe
             </h2>
-            {/* formularz do zmiany zdjęcia */}
-            <img
-              src={user.photoUrl}
-              alt="Profil"
-              className="w-32 h-32 rounded-full object-cover mb-4 shadow mx-auto mb-4"
-            />
-            <div className="flex justify-center space-x-2 mt-4">
-              <button
-                onSubmit={handleSubmitUserPhoto}
-                className="text-white bg-blue-600 px-4 py-2 rounded"
-              >
-                Dodaj
-              </button>
-              <button
-                onClick={closeModal}
-                className="text-gray-700 bg-gray-200 px-4 py-2 rounded"
-              >
-                Zamknij
-              </button>
+
+            {/* Podgląd zdjęcia */}
+            <div className="w-32 h-32 mb-6">
+              <img
+                src={
+                  userPhotoUrl ||
+                  "https://localhost:7281/uploads/UserPhoto/defaultPersonPhoto.png"
+                }
+                alt="Profil"
+                className="w-full h-full object-cover rounded-full shadow-md"
+              />
             </div>
+
+            {/* Formularz */}
+            <form
+              onSubmit={handleSubmitUserPhoto}
+              className="w-full flex flex-col items-center"
+            >
+              <input
+                type="file"
+                name="photo"
+                accept="image/*"
+                className="mb-6 w-full text-gray-700 file:bg-blue-400 file:text-white file:px-4 file:py-2 file:rounded file:border-none file:cursor-pointer "
+              />
+
+              <div className="flex justify-center gap-4 w-full">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition-colors"
+                >
+                  Dodaj
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition-colors"
+                >
+                  Zamknij
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
