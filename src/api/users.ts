@@ -23,3 +23,20 @@ export const getUserPhoto = async (): Promise<string> => {
   console.log(`mam zdjęcie: ${response.data} `);
   return response.data;
 };
+
+export const updateUserFields = async (
+  field: "aboutMe" | "phoneNumber",
+  value: string
+): Promise<User> => {
+  const fieldMap: Record<typeof field, number> = {
+    aboutMe: 0,
+    phoneNumber: 1,
+  };
+
+  const response = await api.patch<User>("User/patchUserAboutMeOrPhoneNumber", {
+    field: fieldMap[field],
+    value,
+  });
+
+  return response.data;
+};
