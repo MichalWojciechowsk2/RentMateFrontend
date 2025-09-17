@@ -2,7 +2,8 @@ import { useAuth } from "../context/AuthContext";
 import { IoIosSettings } from "react-icons/io";
 import { useState, useEffect } from "react";
 import ProfileSettingsButtons from "../components/profile/ProfileSettingsButtons";
-import { uploadUserPhoto, getUserPhoto } from "../api/users";
+import { uploadUserPhoto, getUserPhoto, updateUserFields } from "../api/users";
+import { requestFormReset } from "react-dom";
 
 //Obsłużyć zmiane aboutMe i telephone
 
@@ -26,18 +27,37 @@ const ProfilePage = () => {
   };
   const closeModal = () => setActiveAction(null);
 
-  const fetchUserPhoto = async () => {
+  const handleSubmitAboutMe = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const textarea = form.elements.namedItem("aboutMe") as HTMLTextAreaElement;
+
+    if (!textarea.value.trim()) return;
     try {
-      const data = await getUserPhoto();
-      setUserPhotoUrl(data);
-      console.log(`To jest url ${data}`);
-    } catch (error) {
-      console.error("Failed to fetch user photo:", error);
+      await updateUserFields("aboutMe", textarea.value);
+      closeModal();
+      refreshUser();
+    } catch (err) {
+      console.error("Failed to update aboutMe", err);
     }
   };
-
-  const handleSubmitAboutMe = () => {};
-  const handleSumbitPhoneNumber = () => {};
+  const handleSumbitPhoneNumber = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const textarea = form.elements.namedItem(
+      "phoneNumber"
+    ) as HTMLTextAreaElement;
+    if (!textarea.value.trim()) return;
+    try {
+      await updateUserFields("phoneNumber", textarea.value);
+      closeModal();
+      refreshUser();
+    } catch (err) {
+      console.error("Failed to update phone number", err);
+    }
+  };
   const handleSubmitUserPhoto = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fileInput = e.currentTarget.elements.namedItem(
@@ -53,13 +73,23 @@ const ProfilePage = () => {
       const result = await uploadUserPhoto(file);
       setUserPhotoUrl(result.imageUrl || result);
       closeModal();
-      fetchUserPhoto();
+      refreshUser();
     } catch (err) {
       console.error("Upload failed:", err);
     }
   };
 
+  const fetchUserPhoto = async () => {
+    try {
+      const data = await getUserPhoto();
+      setUserPhotoUrl(data);
+    } catch (error) {
+      console.error("Failed to fetch user photo:", error);
+    }
+  };
+
   useEffect(() => {
+    // refreshUser();
     fetchUserPhoto();
   }, []);
 
@@ -100,7 +130,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Dane kontaktowe */}
-        <div className="mt-6 space-y-2 text-black">
+        <div className="mt-2 space-y-2 text-black">
           <p>
             <span className="font-semibold">Telefon: </span>
             {user.phoneNumber || "Brak"}
@@ -109,8 +139,8 @@ const ProfilePage = () => {
 
         {/* O mnie */}
         {user.aboutMe && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-2">O mnie</h3>
+          <div className="mt-1">
+            <h3 className="text-lg font-semibold text-black">O mnie</h3>
             <p className="text-gray-700 whitespace-pre-line">{user.aboutMe}</p>
           </div>
         )}
