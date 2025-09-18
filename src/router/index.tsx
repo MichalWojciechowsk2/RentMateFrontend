@@ -8,6 +8,7 @@ import PropertiesPage from "../pages/PropertiesPage";
 import AddPropertyPage from "../pages/AddPropertyPage";
 import AddPhotos from "../pages/AddPhotos";
 import ProfilePage from "../pages/ProfilePage";
+import InboxPage from "../pages/InboxPage";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ProfilePage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "inbox",
+        element: (
+          <PrivateRoute>
+            <InboxPage />
           </PrivateRoute>
         ),
       },

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import React, { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { IoNotifications } from "react-icons/io5";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
@@ -40,6 +41,11 @@ const NavBar: React.FC = () => {
         {user && <Link to="/my-properties">Moje mieszkania</Link>}
         {user && <Link to="/my-rental">Mój wynajem</Link>}
         {user && <Link to="/profile"> Hello {user.email}</Link>}
+        {user && (
+          <Link to="/inbox" className="flex items-center">
+            <IoNotifications className="text-2xl" />
+          </Link>
+        )}
       </div>
     </nav>
   );
