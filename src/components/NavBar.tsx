@@ -1,15 +1,33 @@
 import { Link, useLocation } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { IoNotifications } from "react-icons/io5";
+import { startNotificationHub } from "../api/notificationHub";
+import * as signalR from "@microsoft/signalr";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
   const { currentUser: user } = useAuth();
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(
+    null
+  );
+  const [unreadNoti, setUnreadNoti] = useState<any>(null);
 
   useEffect(() => {
-    console.log(`Current user:`, user);
-  }, [user]);
+    const conn = startNotificationHub();
+    if (!conn) return;
+    setConnection(conn);
+    conn.on("ReceiveUnreadCount", (count: number) => {
+      console.log(
+        "SignalR - otrzymana liczba nieprzeczytanych powiadomień:",
+        count
+      );
+      setUnreadNoti(count);
+    });
+    return () => {
+      conn.stop();
+    };
+  }, []);
 
   const linkClass = (path: string) =>
     pathname === path
@@ -42,8 +60,21 @@ const NavBar: React.FC = () => {
         {user && <Link to="/my-rental">Mój wynajem</Link>}
         {user && <Link to="/profile"> Hello {user.email}</Link>}
         {user && (
-          <Link to="/inbox" className="flex items-center">
+          // <Link to="/inbox" className="flex items-center">
+          //   <IoNotifications className="text-2xl" />
+          //   {unreadNoti > 0 && (
+          //     <span className="absolute top-2 right-4 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+          //       1
+          //     </span>
+          //   )}
+          // </Link>
+          <Link to="/inbox" className="relative flex items-center">
             <IoNotifications className="text-2xl" />
+            {unreadNoti > 0 && (
+              <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {unreadNoti}
+              </span>
+            )}
           </Link>
         )}
       </div>
