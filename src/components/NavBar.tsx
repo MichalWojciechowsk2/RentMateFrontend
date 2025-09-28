@@ -2,32 +2,34 @@ import { Link, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { IoNotifications } from "react-icons/io5";
-import { startNotificationHub } from "../api/notificationHub";
-import * as signalR from "@microsoft/signalr";
+import {
+  startNotificationHub,
+  onReceiveUnreadCount,
+  stopNotificationHub,
+} from "../api/notificationHub";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
-  const { currentUser: user } = useAuth();
-  const [connection, setConnection] = useState<signalR.HubConnection | null>(
-    null
-  );
+  const { currentUser: user, token } = useAuth();
   const [unreadNoti, setUnreadNoti] = useState<any>(null);
 
   useEffect(() => {
-    const conn = startNotificationHub();
-    if (!conn) return;
-    setConnection(conn);
-    conn.on("ReceiveUnreadCount", (count: number) => {
-      console.log(
-        "SignalR - otrzymana liczba nieprzeczytanych powiadomień:",
-        count
-      );
-      setUnreadNoti(count);
-    });
+    let mounted = true;
+    if (token) {
+      startNotificationHub(token).then((conn) => {
+        if (!mounted || !conn) return;
+
+        onReceiveUnreadCount((count: number) => {
+          setUnreadNoti(count);
+        });
+      });
+    }
+
     return () => {
-      conn.stop();
+      mounted = false;
+      stopNotificationHub();
     };
-  }, []);
+  }, [user]);
 
   const linkClass = (path: string) =>
     pathname === path
@@ -60,18 +62,10 @@ const NavBar: React.FC = () => {
         {user && <Link to="/my-rental">Mój wynajem</Link>}
         {user && <Link to="/profile"> Hello {user.email}</Link>}
         {user && (
-          // <Link to="/inbox" className="flex items-center">
-          //   <IoNotifications className="text-2xl" />
-          //   {unreadNoti > 0 && (
-          //     <span className="absolute top-2 right-4 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-          //       1
-          //     </span>
-          //   )}
-          // </Link>
           <Link to="/inbox" className="relative flex items-center">
             <IoNotifications className="text-2xl" />
             {unreadNoti > 0 && (
-              <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {unreadNoti}
               </span>
             )}
