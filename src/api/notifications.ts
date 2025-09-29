@@ -10,3 +10,15 @@ export const createNotification = async (
   const response = await api.post("/Notification", dto);
   return response.data;
 };
+
+export const getUnreadCount = async (): Promise<number> => {
+  const response = await api.get("/Notification/countUnreadNotification");
+  return response.data;
+};
+
+export const getListOfNotifications = async (): Promise<
+  NotificationEntity[]
+> => {
+  const response = await api.get("/Notification");
+  return response.data;
+};

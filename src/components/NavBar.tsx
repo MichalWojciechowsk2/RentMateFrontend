@@ -7,6 +7,7 @@ import {
   onReceiveUnreadCount,
   stopNotificationHub,
 } from "../api/notificationHub";
+import { getUnreadCount } from "../api/notifications";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
@@ -15,7 +16,12 @@ const NavBar: React.FC = () => {
 
   useEffect(() => {
     let mounted = true;
+
     if (token) {
+      getUnreadCount().then((count) => {
+        if (mounted) setUnreadNoti(count);
+      });
+
       startNotificationHub(token).then((conn) => {
         if (!mounted || !conn) return;
 
@@ -29,7 +35,7 @@ const NavBar: React.FC = () => {
       mounted = false;
       stopNotificationHub();
     };
-  }, [user]);
+  }, [token]);
 
   const linkClass = (path: string) =>
     pathname === path
