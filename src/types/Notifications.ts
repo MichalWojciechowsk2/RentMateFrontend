@@ -13,7 +13,7 @@ export type NotificationEntity = {
   receiverId: number;
   title: string;
   message: string;
-  createAt: Date;
+  createdAt: Date;
   isRead: boolean;
   type: NotificationType;
 };
