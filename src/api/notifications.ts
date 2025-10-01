@@ -4,6 +4,10 @@ import type {
   PostNotificationDto,
 } from "../types/Notifications";
 
+export const readNotification = async (notiId: number) => {
+  await api.put(`/Notification/${notiId}/read`);
+};
+
 export const createNotification = async (
   dto: PostNotificationDto
 ): Promise<NotificationEntity> => {

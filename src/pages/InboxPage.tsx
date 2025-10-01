@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { getListOfNotifications } from "../api/notifications";
+import { getListOfNotifications, readNotification } from "../api/notifications";
 import type { NotificationEntity } from "../types/Notifications";
 
 const InboxPage = () => {
   const [listOfNotifications, setListOfNotifications] = useState<
     NotificationEntity[]
   >([]);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  const readNoti = async (noti: NotificationEntity) => {
+    setExpandedId(expandedId === noti.id ? null : noti.id);
+    if (!noti.isRead) {
+      setListOfNotifications((prev) =>
+        prev.map((n) => (n.id === noti.id ? { ...n, isRead: true } : n))
+      );
+      try {
+        await readNotification(noti.id);
+      } catch (err) {
+        console.error("Błąd oznaczania powiadomienia jako przeczytane:", err);
+      }
+    }
+  };
 
   useEffect(() => {
     getListOfNotifications()
@@ -33,7 +48,10 @@ const InboxPage = () => {
                 key={n.id}
                 className="hover:bg-gray-50 transition cursor-pointer"
               >
-                <button className="w-full text-left px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-50">
+                <button
+                  className="w-full text-left px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-50"
+                  onClick={() => readNoti(n)}
+                >
                   <div>
                     <h2
                       className={`text-md ${
@@ -44,6 +62,9 @@ const InboxPage = () => {
                     >
                       {n.title}
                     </h2>
+                    {expandedId === n.id && (
+                      <p className="mt-2 text-gray-700">{n.message}</p>
+                    )}
                   </div>
                   <span className="text-xs text-gray-400 mt-2 sm:mt-0">
                     {new Date(n.createdAt).toLocaleString()}
