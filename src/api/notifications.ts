@@ -26,3 +26,10 @@ export const getListOfNotifications = async (): Promise<
   const response = await api.get("/Notification");
   return response.data;
 };
+
+export const deleteNotificationById = async (
+  notificationId: number
+): Promise<boolean> => {
+  const response = await api.delete(`/Notification/${notificationId}`);
+  return response.data;
+};
