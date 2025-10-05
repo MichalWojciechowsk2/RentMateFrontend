@@ -9,6 +9,7 @@ import {
 import { getUserById } from "../api/users";
 import type { Property, PropertyImage } from "../types/Property";
 import type { User } from "../types/User";
+import { createPrivateChat } from "../api/chat";
 
 const PropertyDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -92,6 +93,14 @@ const PropertyDetailPage = () => {
       console.error("Błąd wczytywania właściciela", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (senderId: number) => {
+    try {
+      await createPrivateChat(senderId);
+    } catch (err) {
+      console.error("Błąd tworzenia/zwracania chatu");
     }
   };
 
@@ -216,9 +225,15 @@ const PropertyDetailPage = () => {
                 to={`/user/${propertyOwner?.id}/profile`}
                 className="flex space-x-4 items-center"
               >
-                <div className="bg-gray-300 w-20 h-20 flex items-center justify-center rounded-full p-2">
-                  Zdj prof
-                </div>
+                <img
+                  src={
+                    propertyOwner?.photoUrl ||
+                    "https://localhost:7281/uploads/UserPhoto/defaultPersonPhoto.png"
+                  }
+                  alt="Profil"
+                  className="w-20 h-20 flex items-center justify-center rounded-full p-2 object-cover mb-4 shadow"
+                />
+
                 <div>
                   <div>
                     {propertyOwner?.firstName} {propertyOwner?.lastName}
@@ -229,20 +244,25 @@ const PropertyDetailPage = () => {
             </div>
             {!ownerNumberActive ? (
               <button
-                className="w-1/1 mb-2"
+                className="w-1/1 mb-2 bg-[#101828]"
                 onClick={() => setOwnerNumberActive(true)}
               >
                 Wyświetl numer
               </button>
             ) : (
               <button
-                className="w-full mb-2"
+                className="w-full mb-2 bg-[#101828]"
                 onClick={() => setOwnerNumberActive(false)}
               >
                 {propertyOwner?.phoneNumber}
               </button>
             )}
-            <button className="w-full">Wyślij wiadomość</button>
+            <button
+              className="w-full bg-[#101828]"
+              onClick={() => handleSendMessage(propertyOwner?.id!)}
+            >
+              Wyślij wiadomość
+            </button>
             <p className="text-black">
               ZROBIĆ WIADOMOŚCI, OCENY, ZDJECIA !!!!!
             </p>

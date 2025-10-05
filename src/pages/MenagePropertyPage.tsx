@@ -47,7 +47,7 @@ const MenagePropertyPage = () => {
         </h1>
       </div>
       <div className="p-6">
-        <Tabs.Root className="w-full">
+        <Tabs.Root className="w-full" defaultValue="property">
           <Tabs.List className="flex w-full border-b border-gray-300">
             {tabs.map(({ value, label }) => (
               <Tabs.Trigger
