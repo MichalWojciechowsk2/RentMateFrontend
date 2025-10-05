@@ -15,6 +15,7 @@ import MenagePropertyPage from "./pages/MenagePropertyPage";
 import EditPropertyCreateForm from "./pages/EditPropretyWhileCreate";
 import AddPhotos from "./pages/AddPhotos";
 import InboxPage from "./pages/InboxPage";
+import MessagePage from "./pages/MessagePage";
 
 const App = () => {
   return (
@@ -88,6 +89,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <InboxPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="messages"
+          element={
+            <PrivateRoute>
+              <MessagePage />
             </PrivateRoute>
           }
         />

@@ -132,6 +132,11 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
           ))}
         </div>
       )}
+      {!acceptedOffer && (
+        <p className="text-gray-700 text-2xl p-4 font-semibold">
+          Brak dostępnych ofert.
+        </p>
+      )}
 
       {acceptedOffer && (
         <div>

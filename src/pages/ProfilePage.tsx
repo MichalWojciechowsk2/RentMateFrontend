@@ -3,9 +3,6 @@ import { IoIosSettings } from "react-icons/io";
 import { useState, useEffect } from "react";
 import ProfileSettingsButtons from "../components/profile/ProfileSettingsButtons";
 import { uploadUserPhoto, getUserPhoto, updateUserFields } from "../api/users";
-import { requestFormReset } from "react-dom";
-
-//Obsłużyć zmiane aboutMe i telephone
 
 const ProfilePage = () => {
   const { currentUser: user, logout, refreshUser } = useAuth();

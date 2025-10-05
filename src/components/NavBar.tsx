@@ -8,11 +8,13 @@ import {
   stopNotificationHub,
 } from "../api/notificationHub";
 import { getUnreadCount } from "../api/notifications";
+import { FaMessage } from "react-icons/fa6";
 
 const NavBar: React.FC = () => {
   const { pathname } = useLocation();
   const { currentUser: user, token } = useAuth();
   const [unreadNoti, setUnreadNoti] = useState<any>(null);
+  const [unreadMessages, setUnreadMessages] = useState<any>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -73,6 +75,16 @@ const NavBar: React.FC = () => {
             {unreadNoti > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
                 {unreadNoti}
+              </span>
+            )}
+          </Link>
+        )}
+        {user && (
+          <Link to="/messages" className="relative flex items-center">
+            <FaMessage className="text-xl" />
+            {unreadMessages > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {unreadMessages}
               </span>
             )}
           </Link>
