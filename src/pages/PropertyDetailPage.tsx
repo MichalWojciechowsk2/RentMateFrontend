@@ -1,4 +1,4 @@
-import { data, Link, useParams } from "react-router-dom";
+import { data, Link, Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   GetPropertyById,
@@ -10,6 +10,7 @@ import { getUserById } from "../api/users";
 import type { Property, PropertyImage } from "../types/Property";
 import type { User } from "../types/User";
 import { createPrivateChat } from "../api/chat";
+import { useNavigate } from "react-router-dom";
 
 const PropertyDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -22,6 +23,7 @@ const PropertyDetailPage = () => {
   const [mainImages, setMainImages] = useState<Record<number, string>>({});
   const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
   const [otherImages, setOtherImages] = useState<PropertyImage[]>([]);
+  const navigate = useNavigate();
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -96,9 +98,10 @@ const PropertyDetailPage = () => {
     }
   };
 
-  const handleSendMessage = async (senderId: number) => {
+  const handleSendMessage = async (otherUserId: number) => {
     try {
-      await createPrivateChat(senderId);
+      const newChat = await createPrivateChat(otherUserId);
+      navigate(`/chats/${newChat.id}`);
     } catch (err) {
       console.error("Błąd tworzenia/zwracania chatu");
     }

@@ -93,7 +93,15 @@ const App = () => {
           }
         />
         <Route
-          path="messages"
+          path="chats/"
+          element={
+            <PrivateRoute>
+              <MessagePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="chats/:chatId"
           element={
             <PrivateRoute>
               <MessagePage />
