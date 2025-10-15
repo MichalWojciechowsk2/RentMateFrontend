@@ -40,7 +40,11 @@ const MessagePage = () => {
     if (!messageText.trim() || !chatId) return;
 
     try {
-      await sendMessage(Number(chatId), messageText.trim());
+      const chatCreateMessage = {
+        chatId: Number(chatId),
+        content: messageText.trim(),
+      };
+      await sendMessage(chatCreateMessage);
       setMessageText("");
     } catch (err) {
       console.error("Błąd wysyłania wiadomości:", err);
