@@ -4,14 +4,17 @@ import type { Chat } from "../types/Chat";
 import { getChatsForUser } from "../api/chat";
 import { sendMessage } from "../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const MessagePage = () => {
   const navigate = useNavigate();
   const { chatId } = useParams<{ chatId: string }>();
+  const { currentUser } = useAuth();
 
   const [privateChats, setPrivateChats] = useState<Chat[]>([]);
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
+  const [chatMessages, setChatMessages] = useState();
 
   // Fetch wszystkich czatów
   const fetchChats = async () => {
@@ -25,8 +28,21 @@ const MessagePage = () => {
     }
   };
 
+  //Fetch konkretnego chatu
+  const fetchChatBasedOnId = async (chatId : number) => {
+    try {
+      const data = await getChatWithMessages(chatId);
+      setChatMessages(data.messeges);
+    } catch(err) {
+      console.error("Błąd pobierania wiadomości: ",err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     fetchChats();
+    if(chatId) fetchChatBasedOnId(chatId);
   }, []);
 
   // Obsługa inputa
@@ -40,7 +56,7 @@ const MessagePage = () => {
     if (!messageText.trim() || !chatId) return;
 
     try {
-      await sendMessage(Number(chatId), messageText.trim());
+      await sendMessage({chatId: Number(chatId), content: messageText.trim()});
       setMessageText("");
     } catch (err) {
       console.error("Błąd wysyłania wiadomości:", err);
@@ -105,8 +121,22 @@ const MessagePage = () => {
         <div className="flex-1 flex flex-col bg-gray-50">
           {/* Lista wiadomości */}
           <div className="flex-1 p-4 overflow-y-auto space-y-2">
-            {/* Tutaj dynamicznie renderuj wiadomości */}
-          </div>
+  {chatMessages.map((msg) => (
+    <div
+      key={msg.messageId}
+      className={`max-w-xs px-4 py-2 rounded-lg text-sm ${
+        msg.senderId === currentUser?.id
+          ? "bg-blue-500 text-white self-end ml-auto"
+          : "bg-gray-200 text-gray-800 self-start mr-auto"
+      }`}
+    >
+      <p>{msg.content}</p>
+      <span className="text-xs opacity-70">
+        {new Date(msg.createdAt).toLocaleTimeString()}
+      </span>
+    </div>
+  ))}
+</div>
 
           {/* Pole wysyłania wiadomości */}
           <form
