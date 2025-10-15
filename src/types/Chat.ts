@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type Chat = {
   chatId: number;
   chatName: string;
@@ -27,3 +29,10 @@ export type Message = {
   createdAt: Date;
   chatId: number;
 };
+
+
+export type ChatWithContent = {
+  chatId: number;
+  users: User[];
+  messages: Message[]
+}
