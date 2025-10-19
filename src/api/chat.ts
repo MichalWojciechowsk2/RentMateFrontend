@@ -4,6 +4,7 @@ import type {
   ChatEntity,
   ChatCreateMessage,
   Message,
+  ChatWithContent,
 } from "../types/Chat";
 
 export const getChatsForUser = async (chatId?: number): Promise<Chat[]> => {
@@ -34,5 +35,12 @@ export const sendMessage = async (
   messageDto: ChatCreateMessage
 ): Promise<Message> => {
   const response = await api.post(`Message/send`, messageDto);
+  return response.data;
+};
+
+export const getChatWithMessages = async (
+  chatId: number
+): Promise<ChatWithContent> => {
+  const response = await api.get(`Message/chat`, { params: { chatId } });
   return response.data;
 };

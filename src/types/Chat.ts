@@ -6,6 +6,7 @@ export type Chat = {
   lastMessageContent: string;
   lastMessageCreateAt: Date;
   otherUserPhotoUrl: string;
+  otherUserName: string;
 };
 
 export type ChatEntity = {
@@ -30,9 +31,8 @@ export type Message = {
   chatId: number;
 };
 
-
 export type ChatWithContent = {
   chatId: number;
   users: User[];
-  messages: Message[]
-}
+  messages: Message[];
+};
