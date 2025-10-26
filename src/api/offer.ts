@@ -40,3 +40,10 @@ export const downloadOfferContractPdf = async (
   });
   return response.data;
 };
+
+export const getAcceptedUserOffer = async (userId: number): Promise<Offer> => {
+  const response = await api.get(
+    `/Offer/getAcceptedUserOffer?userId=${userId}`
+  );
+  return response.data;
+};

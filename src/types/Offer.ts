@@ -14,7 +14,7 @@ export type Offer = {
   acceptedAt: Date;
   offerContract: string;
   tenant: User;
-  // property: Property;
+  property: Property;
 };
 
 export type CreateOffer = {

@@ -12,6 +12,7 @@ export type Property = {
   basePrice: number;
   baseDeposit: number;
   isActive: boolean;
+  chatGroupId: number;
 };
 export type PropertyEntity = {
   id: number;
@@ -29,6 +30,7 @@ export type PropertyEntity = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string | null;
+  chatGroupId: number;
 };
 
 export type CreateProperty = {

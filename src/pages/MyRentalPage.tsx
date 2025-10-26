@@ -1,11 +1,13 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import MyOfferComponent from "../components/my-rental/MyOfferComponent.tsx";
 import PaymentTenantComponent from "../components/my-rental/Payments/PaymentTenantComponent.tsx";
+import PropertyChatComponent from "../components/my-rental/PropertyChatComponent.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
 
 const tabs = [
   { value: "oferta", label: "oferta" },
   { value: "rachunki", label: "rachunki" },
+  { value: "chat", label: "chat" },
 ];
 
 export default function MyRentalPage() {
@@ -52,6 +54,9 @@ export default function MyRentalPage() {
           </Tabs.Content>
           <Tabs.Content value="rachunki">
             <PaymentTenantComponent />
+          </Tabs.Content>
+          <Tabs.Content value="chat">
+            <PropertyChatComponent currentUserId={user?.id} />
           </Tabs.Content>
         </div>
       </Tabs.Root>
