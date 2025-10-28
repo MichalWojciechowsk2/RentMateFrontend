@@ -25,7 +25,7 @@ export const getPagedProperties = async (
 };
 
 export const GetPropertyById = async (id: number): Promise<Property> => {
-  const response = await api.get<Property>(`Property/getPropertyById?id=${id}`);
+  const response = await api.get<Property>(`Property/getPropertyById?Id=${id}`);
   return response.data;
 };
 export const GetPropertyEntityById = async (

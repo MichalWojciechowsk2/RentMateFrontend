@@ -6,12 +6,14 @@ import * as Tabs from "@radix-ui/react-tabs";
 import PropertyComponent from "../components/my-properties/Property/PropertyComponent";
 import OfferComponent from "../components/my-properties/Offer/OfferComponent";
 import PaymentOwnerComponent from "../components/my-properties/Payments/PaymentOwnerComponent";
+import PropertyChatComponent from "../components/my-rental/PropertyChatComponent";
 
 const tabs = [
   { value: "property", label: "Mieszkanie" },
   { value: "offer", label: "Umowy wynajmu" },
   { value: "payments", label: "Rachunki" },
   { value: "problems", label: "Problemy" },
+  { value: "chat", label: "Chat" },
 ];
 
 const MenagePropertyPage = () => {
@@ -89,6 +91,9 @@ const MenagePropertyPage = () => {
             </Tabs.Content>
             <Tabs.Content value="payments">
               <PaymentOwnerComponent propertyId={Number(id)} />
+            </Tabs.Content>
+            <Tabs.Content value="chat">
+              <PropertyChatComponent propertyId={Number(id)} />
             </Tabs.Content>
           </div>
         </Tabs.Root>
