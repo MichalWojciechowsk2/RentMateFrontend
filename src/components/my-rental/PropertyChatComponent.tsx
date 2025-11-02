@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { getChatWithMessages } from "../../api/chat";
-import { getAcceptedUserOffer } from "../../api/offer";
+import {
+  getAcceptedUserOffer,
+  getPropertyChatIdByOfferId,
+} from "../../api/offer";
 import { GetPropertyById } from "../../api/property";
-import { sendMessage } from "../../api/chat"; // ✅ Upewnij się, że ta funkcja istnieje
+import { sendMessage } from "../../api/chat";
 import type { Message } from "../../types/Chat";
+import { useRef } from "react";
 
 type PropertyChatComponentProps = {
   currentUserId?: number;
@@ -19,27 +23,27 @@ const PropertyChatComponent = ({
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [chatGroupId, setChatGroupId] = useState<number | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const fetchChat = async () => {
     if (!currentUserId && !propertyId) return;
 
     try {
-      setLoading(true);
-
       let chatId: number | null = null;
 
       if (currentUserId) {
         const offer = await getAcceptedUserOffer(Number(currentUserId));
-        if (offer?.property?.chatGroupId) {
-          chatId = offer.property.chatGroupId;
-          console.log(`Chat ID from offer: ${chatId}`);
+        if (offer) {
+          const propertyChatId = await getPropertyChatIdByOfferId(offer.id);
+          if (propertyChatId) {
+            chatId = propertyChatId;
+          }
         }
+        console.log(`Chat ID from offer: ${chatId}`);
       } else if (propertyId) {
-        console.log(`Property ID!!!!!!!!!!!!!!!!!!!!!: ${propertyId}`);
         const property = await GetPropertyById(propertyId);
         if (property?.chatGroupId) {
           chatId = property.chatGroupId;
-          console.log(`Chat ID from property: ${chatId}`);
         }
       }
       if (!chatId) {
@@ -51,15 +55,15 @@ const PropertyChatComponent = ({
       setChatGroupId(chatId);
     } catch (err) {
       console.error("Błąd ładowania wiadomości", err);
-    } finally {
-      setLoading(false);
-      console.log("ChatGroupId !!!!!!!!!!!!!!!!!:", chatGroupId);
     }
   };
 
   useEffect(() => {
     fetchChat();
   }, [currentUserId]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessageText(e.target.value);
@@ -83,10 +87,14 @@ const PropertyChatComponent = ({
     }
   };
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   if (loading) return <p className="p-6">Ładowanie...</p>;
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50">
+    <div className="flex-1 flex flex-col bg-gray-50 h-[80vh] max-h-[80vh] rounded-lg shadow-md">
       {/* Lista wiadomości */}
       <div className="flex-1 p-4 overflow-y-auto space-y-2">
         {chatMessages.map((msg, index) => {
@@ -131,6 +139,7 @@ const PropertyChatComponent = ({
             </div>
           );
         })}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Pole wysyłania wiadomości */}
