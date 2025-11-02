@@ -1,5 +1,6 @@
 import api from "./axiosInstance";
 import type { Offer, CreateOffer, OfferStatus } from "../types/Offer";
+import type { Property } from "../types/Property";
 
 export const createOffer = async (offer: CreateOffer): Promise<void> => {
   await api.post("/Offer", offer);
@@ -44,6 +45,15 @@ export const downloadOfferContractPdf = async (
 export const getAcceptedUserOffer = async (userId: number): Promise<Offer> => {
   const response = await api.get(
     `/Offer/getAcceptedUserOffer?userId=${userId}`
+  );
+  return response.data;
+};
+
+export const getPropertyChatIdByOfferId = async (
+  offerId: number
+): Promise<number> => {
+  const response = await api.get(
+    `/Offer/getPropertyChatIdByOfferId?offerId=${offerId}`
   );
   return response.data;
 };

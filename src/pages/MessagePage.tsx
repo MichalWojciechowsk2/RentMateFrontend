@@ -5,6 +5,7 @@ import { getChatsForUser } from "../api/chat";
 import { sendMessage, getChatWithMessages } from "../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useRef } from "react";
 
 const MessagePage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const MessagePage = () => {
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch wszystkich czatów
   const fetchChats = async () => {
@@ -40,10 +42,12 @@ const MessagePage = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
 
   useEffect(() => {
     fetchChats();
-    console.log(`ChatId:${chatId}`);
     if (chatId) fetchChatBasedOnId(Number(chatId));
   }, [chatId]);
   // Obsługa inputa
@@ -62,10 +66,15 @@ const MessagePage = () => {
         content: messageText.trim(),
       };
       await sendMessage(chatCreateMessage);
+      fetchChatBasedOnId(Number(chatId));
       setMessageText("");
     } catch (err) {
       console.error("Błąd wysyłania wiadomości:", err);
     }
+  };
+
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   if (loading) return <p>Ładowanie czatów...</p>;
@@ -178,6 +187,7 @@ const MessagePage = () => {
                 </div>
               );
             })}
+            <div ref={messageEndRef} />
           </div>
 
           {/* Pole wysyłania wiadomości */}
