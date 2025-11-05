@@ -7,6 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useRef } from "react";
 
+const TAKE = 12;
+
 const MessagePage = () => {
   const navigate = useNavigate();
   const { chatId } = useParams<{ chatId: string }>();
@@ -16,7 +18,10 @@ const MessagePage = () => {
   const [loading, setLoading] = useState(true);
   const [messageText, setMessageText] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [skip, setSkip] = useState(0);
+
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const messageListRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch wszystkich czatów
   const fetchChats = async () => {
@@ -33,8 +38,7 @@ const MessagePage = () => {
   //Fetch konkretnego chatu
   const fetchChatBasedOnId = async (chatId: number) => {
     try {
-      const data = await getChatWithMessages(chatId);
-      console.log(`Mam wiadomości dla czatu: ${data.messages}`);
+      const data = await getChatWithMessages(chatId, skip, TAKE);
       setChatMessages(data.messages);
     } catch (err) {
       console.error("Błąd pobierania wiadomości: ", err);

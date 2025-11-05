@@ -1,115 +1,124 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { FormEvent } from "react";
-import { getChatWithMessages } from "../../api/chat";
+import { getChatWithMessages, sendMessage } from "../../api/chat";
 import {
   getAcceptedUserOffer,
   getPropertyChatIdByOfferId,
 } from "../../api/offer";
 import { GetPropertyById } from "../../api/property";
-import { sendMessage } from "../../api/chat";
 import type { Message } from "../../types/Chat";
-import { useRef } from "react";
 
 type PropertyChatComponentProps = {
   currentUserId?: number;
   propertyId?: number;
 };
 
+const TAKE = 12;
+
 const PropertyChatComponent = ({
   currentUserId,
   propertyId,
 }: PropertyChatComponentProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [chatGroupId, setChatGroupId] = useState<number | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [skip, setSkip] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const fetchChat = async () => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchChat = async (append = false, skipValue = skip) => {
     if (!currentUserId && !propertyId) return;
 
-    try {
-      let chatId: number | null = null;
+    let chatId: number | null = null;
 
-      if (currentUserId) {
-        const offer = await getAcceptedUserOffer(Number(currentUserId));
-        if (offer) {
-          const propertyChatId = await getPropertyChatIdByOfferId(offer.id);
-          if (propertyChatId) {
-            chatId = propertyChatId;
-          }
-        }
-        console.log(`Chat ID from offer: ${chatId}`);
-      } else if (propertyId) {
-        const property = await GetPropertyById(propertyId);
-        if (property?.chatGroupId) {
-          chatId = property.chatGroupId;
-        }
+    if (currentUserId) {
+      const offer = await getAcceptedUserOffer(Number(currentUserId));
+      if (offer) {
+        const propertyChatId = await getPropertyChatIdByOfferId(offer.id);
+        if (propertyChatId) chatId = propertyChatId;
       }
-      if (!chatId) {
-        console.warn("Nie znaleziono chatId!");
-        return;
-      }
-      const data = await getChatWithMessages(chatId);
-      setChatMessages(data.messages);
-      setChatGroupId(chatId);
-    } catch (err) {
-      console.error("Błąd ładowania wiadomości", err);
+    } else if (propertyId) {
+      const property = await GetPropertyById(propertyId);
+      if (property?.chatGroupId) chatId = property.chatGroupId;
     }
+
+    if (!chatId) return;
+
+    const data = await getChatWithMessages(chatId, skipValue, TAKE);
+
+    const sorted = data.messages.sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+
+    if (append) {
+      setChatMessages((prev) => [...sorted, ...prev]);
+    } else {
+      setChatMessages(sorted);
+      setTimeout(() => scrollToBottom(), 50);
+    }
+
+    setChatGroupId(chatId);
   };
 
   useEffect(() => {
     fetchChat();
   }, [currentUserId]);
-  useEffect(() => {
-    scrollToBottom();
-  }, [chatMessages]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessageText(e.target.value);
+  const scrollToBottom = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  };
+
+  const handleScroll = async () => {
+    if (!containerRef.current || isLoadingMore) return;
+
+    if (containerRef.current.scrollTop === 0) {
+      setIsLoadingMore(true);
+
+      const prevHeight = containerRef.current.scrollHeight;
+
+      const newSkip = skip + TAKE;
+      await fetchChat(true, newSkip);
+      setSkip(newSkip);
+
+      requestAnimationFrame(() => {
+        const newHeight = containerRef.current!.scrollHeight;
+        containerRef.current!.scrollTop = newHeight - prevHeight;
+      });
+
+      setIsLoadingMore(false);
+    }
   };
 
   const handleSend = async (e: FormEvent) => {
     e.preventDefault();
     if (!messageText.trim() || !chatGroupId) return;
 
-    try {
-      const chatCreateMessage = {
-        chatId: chatGroupId,
-        content: messageText.trim(),
-      };
-      await sendMessage(chatCreateMessage);
-      setMessageText("");
-
-      await fetchChat();
-    } catch (err) {
-      console.error("Błąd wysyłania wiadomości:", err);
-    }
+    await sendMessage({ chatId: chatGroupId, content: messageText.trim() });
+    setMessageText("");
+    await fetchChat(false);
   };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  if (loading) return <p className="p-6">Ładowanie...</p>;
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 h-[80vh] max-h-[80vh] rounded-lg shadow-md">
+    <div className="flex-1 flex flex-col bg-gray-50 h-[80vh] rounded-lg shadow-md">
       {/* Lista wiadomości */}
-      <div className="flex-1 p-4 overflow-y-auto space-y-2">
+      <div
+        ref={containerRef}
+        onScroll={handleScroll}
+        className="flex-1 p-4 overflow-y-auto flex flex-col space-y-2"
+      >
         {chatMessages.map((msg, index) => {
-          const currentDate = new Date(msg.createdAt).toDateString();
-          const prevDate =
-            index > 0
-              ? new Date(chatMessages[index - 1].createdAt).toDateString()
-              : null;
-
-          const isFirstOfDay = currentDate !== prevDate;
+          const showDate =
+            index === 0 ||
+            new Date(chatMessages[index - 1].createdAt).toDateString() !==
+              new Date(msg.createdAt).toDateString();
 
           return (
             <div key={msg.id}>
-              {/* 🔹 Separator daty */}
-              {isFirstOfDay && (
+              {showDate && (
                 <div className="flex justify-center my-3">
                   <span className="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
                     {new Date(msg.createdAt).toLocaleDateString("pl-PL", {
@@ -129,7 +138,7 @@ const PropertyChatComponent = ({
                 }`}
               >
                 <p>{msg.content}</p>
-                <span className="text-xs opacity-70">
+                <span className="text-xs opacity-70 block text-right">
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -139,25 +148,18 @@ const PropertyChatComponent = ({
             </div>
           );
         })}
-        <div ref={messagesEndRef} />
       </div>
 
-      {/* Pole wysyłania wiadomości */}
-      <form
-        className="p-4 border-t flex items-center space-x-2"
-        onSubmit={handleSend}
-      >
+      {/* Input */}
+      <form onSubmit={handleSend} className="p-4 border-t flex space-x-2">
         <input
           type="text"
+          value={messageText}
+          onChange={(e) => setMessageText(e.target.value)}
           placeholder="Napisz wiadomość..."
           className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:border-blue-400 text-black"
-          value={messageText}
-          onChange={handleInputChange}
         />
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600"
-          type="submit"
-        >
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600">
           Wyślij
         </button>
       </form>

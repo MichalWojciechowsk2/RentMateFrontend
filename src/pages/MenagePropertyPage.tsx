@@ -7,6 +7,7 @@ import PropertyComponent from "../components/my-properties/Property/PropertyComp
 import OfferComponent from "../components/my-properties/Offer/OfferComponent";
 import PaymentOwnerComponent from "../components/my-properties/Payments/PaymentOwnerComponent";
 import PropertyChatComponent from "../components/my-rental/PropertyChatComponent";
+import { useAuth } from "../context/AuthContext";
 
 const tabs = [
   { value: "property", label: "Mieszkanie" },
@@ -20,6 +21,7 @@ const MenagePropertyPage = () => {
   const [loading, setLoading] = useState(Boolean);
   const { id } = useParams();
   const [property, setProperty] = useState<Property | null>(null);
+  const { currentUser: user } = useAuth();
 
   const fetchProperty = async (id?: number) => {
     if (id === undefined) return;
@@ -93,7 +95,10 @@ const MenagePropertyPage = () => {
               <PaymentOwnerComponent propertyId={Number(id)} />
             </Tabs.Content>
             <Tabs.Content value="chat">
-              <PropertyChatComponent propertyId={Number(id)} />
+              <PropertyChatComponent
+                currentUserId={user?.id}
+                propertyId={Number(id)}
+              />
             </Tabs.Content>
           </div>
         </Tabs.Root>

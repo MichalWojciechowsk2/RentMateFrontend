@@ -39,8 +39,13 @@ export const sendMessage = async (
 };
 
 export const getChatWithMessages = async (
-  chatId: number
+  chatId: number,
+  skip: number,
+  take: number
 ): Promise<ChatWithContent> => {
-  const response = await api.get(`Message/chat`, { params: { chatId } });
+  const response = await api.get(`Message/chat`, {
+    params: { chatId, skip, take },
+  });
+
   return response.data;
 };
