@@ -19,9 +19,10 @@ const MessagePage = () => {
   const [messageText, setMessageText] = useState("");
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [skip, setSkip] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const messageEndRef = useRef<HTMLDivElement | null>(null);
-  const messageListRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const messageStartRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch wszystkich czatów
   const fetchChats = async () => {
@@ -36,19 +37,29 @@ const MessagePage = () => {
   };
 
   //Fetch konkretnego chatu
-  const fetchChatBasedOnId = async (chatId: number) => {
+  const fetchChatBasedOnId = async (
+    chatId: number,
+    append = false,
+    skipValue = skip
+  ) => {
     try {
-      const data = await getChatWithMessages(chatId, skip, TAKE);
-      setChatMessages(data.messages);
+      const data = await getChatWithMessages(chatId, skipValue, TAKE);
+      const sorted = data.messages.sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+      if (append) {
+        setChatMessages((prev) => [...sorted, ...prev]);
+      } else {
+        setChatMessages(sorted);
+        setTimeout(() => scrollToBottom(), 50);
+      }
     } catch (err) {
       console.error("Błąd pobierania wiadomości: ", err);
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    scrollToBottom();
-  }, [chatMessages]);
 
   useEffect(() => {
     fetchChats();
@@ -78,7 +89,25 @@ const MessagePage = () => {
   };
 
   const scrollToBottom = () => {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  };
+  const handleScroll = async () => {
+    if (!containerRef.current || isLoadingMore) return;
+    if (containerRef.current.scrollTop === 0) {
+      setIsLoadingMore(true);
+      const prevHeight = containerRef.current.scrollHeight;
+      const newSkip = skip + TAKE;
+      await fetchChatBasedOnId(Number(chatId), true, newSkip);
+      setSkip(newSkip);
+
+      requestAnimationFrame(() => {
+        const newHeight = containerRef.current!.scrollHeight;
+        containerRef.current!.scrollTop = newHeight - prevHeight;
+      });
+      setIsLoadingMore(false);
+    }
   };
 
   if (loading) return <p>Ładowanie czatów...</p>;
@@ -130,10 +159,16 @@ const MessagePage = () => {
                         </p>
                       </div>
                     </div>
-
                     <span className="text-xs text-gray-400 mt-2 sm:mt-0 transform transition-all duration-300 group-hover:-translate-x-6">
                       {chat.lastMessageCreateAt
-                        ? new Date(chat.lastMessageCreateAt).toLocaleString()
+                        ? new Date(chat.lastMessageCreateAt).toLocaleString(
+                            "pl-PL",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )
                         : ""}
                     </span>
                   </button>
@@ -147,7 +182,11 @@ const MessagePage = () => {
       {chatId && (
         <div className="flex-1 flex flex-col bg-gray-50">
           {/* Lista wiadomości */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-2">
+          <div
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex-1 p-4 overflow-y-auto space-y-2"
+          >
             {chatMessages.map((msg, index) => {
               const currentDate = new Date(msg.createdAt).toDateString();
               const prevDate =
@@ -191,7 +230,6 @@ const MessagePage = () => {
                 </div>
               );
             })}
-            <div ref={messageEndRef} />
           </div>
 
           {/* Pole wysyłania wiadomości */}

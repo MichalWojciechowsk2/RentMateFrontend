@@ -7,6 +7,7 @@ import {
 } from "../../api/offer";
 import { GetPropertyById } from "../../api/property";
 import type { Message } from "../../types/Chat";
+import { useAuth } from "../../context/AuthContext.tsx";
 
 type PropertyChatComponentProps = {
   currentUserId?: number;
@@ -22,6 +23,7 @@ const PropertyChatComponent = ({
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [chatGroupId, setChatGroupId] = useState<number | null>(null);
+
   const [skip, setSkip] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -32,13 +34,13 @@ const PropertyChatComponent = ({
 
     let chatId: number | null = null;
 
-    if (currentUserId) {
+    if (currentUserId && !propertyId) {
       const offer = await getAcceptedUserOffer(Number(currentUserId));
       if (offer) {
         const propertyChatId = await getPropertyChatIdByOfferId(offer.id);
         if (propertyChatId) chatId = propertyChatId;
       }
-    } else if (propertyId) {
+    } else if (currentUserId && propertyId) {
       const property = await GetPropertyById(propertyId);
       if (property?.chatGroupId) chatId = property.chatGroupId;
     }
