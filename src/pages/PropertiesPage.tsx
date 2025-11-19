@@ -298,8 +298,6 @@ const PropertiesPage = () => {
           </button>
         )}
 
-        {/* Pominięcie (…)
-      jeśli aktualna strona > 3 */}
         {pageNumber > 3 && <span className="px-2 py-1">…</span>}
 
         {/* Poprzednia strona */}
@@ -327,7 +325,6 @@ const PropertiesPage = () => {
           </button>
         )}
 
-        {/* Pominięcie (…) przed ostatnią stroną */}
         {pageNumber < totalPages - 2 && <span className="px-2 py-1">…</span>}
 
         {/* Ostatnia strona */}

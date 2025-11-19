@@ -7,7 +7,6 @@ import type {
 } from "../types/Property";
 
 import type { PagedResult } from "../pages/PropertiesPage";
-import { data, Form } from "react-router-dom";
 
 // export const getAllActiveProperties = async (): Promise<Property[]> => {
 //   const response = await api.get<Property[]>("/Property");
