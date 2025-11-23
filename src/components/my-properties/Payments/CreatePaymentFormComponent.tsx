@@ -26,6 +26,8 @@ const CreatePaymentFormComponent = ({
     generateWithRecurring: false,
     recurrenceTimes: 0,
   });
+  const acceptedOffers =
+    offers?.filter((o) => o.status === OfferStatus.Accepted) ?? [];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,7 +98,7 @@ const CreatePaymentFormComponent = ({
             }
           >
             <option value={0}>Wybierz najemców</option>
-            <option value={-1}>Wszyscy</option>
+            {acceptedOffers.length > 1 && <option value={-1}>Wszyscy</option>}
             {offers
               ?.filter((offer) => offer.status === OfferStatus.Accepted)
               .map((offer) => (
