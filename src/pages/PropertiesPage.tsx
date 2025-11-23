@@ -1,23 +1,15 @@
 import { useEffect, useState } from "react";
 import {
-  // getAllActiveProperties,
-  filter,
   getCities,
   getDistricts,
   getMainImageByPropertyId,
-  getPagedProperties,
+  getAllPagedActiveProperties,
 } from "../api/property";
 import type { Property } from "../types/Property";
+import type { Filters } from "../types/Property";
 import type { City, District } from "../types/Location";
 import { Link } from "react-router-dom";
 
-interface Filters {
-  City?: string;
-  District?: string;
-  PriceFrom?: number;
-  PriceTo?: number;
-  Rooms?: number;
-}
 export interface PagedResult<T> {
   totalItems: number;
   pageNumber: number;
@@ -50,39 +42,14 @@ const PropertiesPage = () => {
         .catch((err) => console.error("Błąd pobierania dzielnic:", err));
     } else {
       setDistricts([]);
-      setFilters((prev) => ({ ...prev, District: undefined }));
     }
   }, [filters.City]);
-
-  // const fetchProperties = async (filters?: Filters) => {
-  //   setLoading(true);
-  //   try {
-  //     let data;
-  //     if (filters && Object.keys(filters).length > 0) {
-  //       data = await filter(filters);
-  //     } else {
-  //       data = await getAllActiveProperties();
-  //     }
-  //     setProperties(data);
-  //   } catch (err) {
-  //     console.error("Błąd ładowania nieruchomości: ", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchProperties();
-  // }, []);
-  const fetchProperties = async (filters?: Filters, page: number = 1) => {
+  const fetchProperties = async (filters?: Filters, page = 1) => {
     setLoading(true);
+
     try {
-      let data: PagedResult<Property>;
-      if (filters && Object.keys(filters).length > 0) {
-        data = await getPagedProperties(page, pageSize);
-      } else {
-        data = await getPagedProperties(page, pageSize);
-      }
+      const data = await getAllPagedActiveProperties(page, pageSize, filters);
+
       setProperties(data.items);
       setPageNumber(data.pageNumber);
       setTotalPages(data.totalPages);
@@ -110,16 +77,17 @@ const PropertiesPage = () => {
           ? Number(value)
           : value,
     }));
+    console.log(value);
   };
   const handleFilterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const city = cities.find((c) => String(c.id) === filters.City);
-    const district = districts.find((d) => d.enumName === filters.District);
 
     const filtersToSend = {
-      ...filters,
-      City: city?.name,
-      District: district?.enumName,
+      City: filters.City,
+      District: filters.District,
+      PriceFrom: filters.PriceFrom,
+      PriceTo: filters.PriceTo,
+      Rooms: filters.Rooms,
     };
 
     fetchProperties(filtersToSend);
@@ -176,7 +144,7 @@ const PropertiesPage = () => {
               -- Wybierz miasto --
             </option>
             {cities.map((c) => (
-              <option key={c.id} value={String(c.id)} className="text-black">
+              <option className="text-black" key={c.name} value={c.name}>
                 {c.name}
               </option>
             ))}
@@ -195,7 +163,7 @@ const PropertiesPage = () => {
               -- Wybierz osiedle --
             </option>
             {districts.map((d) => (
-              <option key={d.id} value={d.enumName} className="text-black">
+              <option key={d.name} value={d.name} className="text-black">
                 {d.name}
               </option>
             ))}

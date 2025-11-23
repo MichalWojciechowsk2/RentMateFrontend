@@ -51,3 +51,11 @@ export type PropertyImage = {
   imageUrl: string;
   isMainImage: boolean;
 };
+
+export interface Filters {
+  City?: string;
+  District?: string;
+  PriceFrom?: number;
+  PriceTo?: number;
+  Rooms?: number;
+}

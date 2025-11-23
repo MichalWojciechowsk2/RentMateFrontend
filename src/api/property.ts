@@ -7,18 +7,32 @@ import type {
 } from "../types/Property";
 
 import type { PagedResult } from "../pages/PropertiesPage";
+import type { Filters } from "../types/Property";
 
 // export const getAllActiveProperties = async (): Promise<Property[]> => {
 //   const response = await api.get<Property[]>("/Property");
 //   return response.data;
 // };
 
-export const getPagedProperties = async (
+export const getAllPagedActiveProperties = async (
   pageNumber: number,
-  pageSize: number
+  pageSize: number,
+  filters?: Filters
 ): Promise<PagedResult<Property>> => {
+  const params = new URLSearchParams({
+    pageNumber: String(pageNumber),
+    pageSize: String(pageSize),
+    ...(filters?.City && { city: filters.City }),
+    ...(filters?.District && { district: filters.District }),
+    ...(filters?.PriceFrom !== undefined && {
+      priceFrom: String(filters.PriceFrom),
+    }),
+    ...(filters?.PriceTo !== undefined && { priceTo: String(filters.PriceTo) }),
+    ...(filters?.Rooms !== undefined && { rooms: String(filters.Rooms) }),
+  });
+
   const response = await api.get<PagedResult<Property>>(
-    `/Property?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    `/Property?${params.toString()}`
   );
   return response.data;
 };
@@ -89,11 +103,11 @@ export const getCities = async (): Promise<{ id: number; name: string }[]> => {
 };
 
 export const getDistricts = async (
-  cityId: string
-): Promise<{ id: number; name: string; enumName: string }[]> => {
-  const response = await api.get<
-    { id: number; name: string; enumName: string }[]
-  >(`/Property/districts/${cityId}`);
+  city: string
+): Promise<{ name: string }[]> => {
+  const response = await api.get<{ id: number; name: string }[]>(
+    `/Property/districts?city=${city}`
+  );
   return response.data;
 };
 

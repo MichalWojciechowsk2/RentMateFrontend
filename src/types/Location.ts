@@ -1,5 +1,4 @@
 export interface City {
-  id: number;
   name: string;
 }
 
@@ -9,7 +8,6 @@ export const CITY_ID_TO_ENUM: Record<number, string> = {
 };
 
 export interface District {
-  id: number;
+  // id: number;
   name: string;
-  enumName: string;
 }
