@@ -8,7 +8,7 @@ export type ReviewEntity = {
 
 export type ReviewDto = {
   propertyId?: number;
-  UserId?: number;
-  Rating: number;
-  Commet: string;
+  userId?: number;
+  rating: number;
+  comment: string;
 };

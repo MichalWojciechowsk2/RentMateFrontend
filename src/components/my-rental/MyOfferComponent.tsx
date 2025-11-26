@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { OfferStatus, type Offer } from "../../types/Offer";
 import {
   getOffersByUserId,
@@ -10,6 +10,8 @@ import { GetPropertyById, getMainImageByPropertyId } from "../../api/property";
 import { Link } from "react-router-dom";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { FaCommentMedical } from "react-icons/fa6";
+import AddReviewComponent from "../review/AddReviewComponent";
 
 type MyOfferComponentProps = {
   currentUserId?: number;
@@ -19,6 +21,7 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
   const [offers, setOffers] = useState<Offer[] | null>(null);
   const [property, setProperty] = useState<Property | null>(null);
   const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (currentUserId) {
@@ -98,11 +101,24 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
     }
   }, [acceptedOffer]);
 
+  const openReviewModal = () => setIsReviewModalOpen(true);
+  const closeReviewModal = () => setIsReviewModalOpen(false);
+
   if (!offers || offers.length === 0) return <div>Brak ofert</div>;
   if (loading) return <p className="p-6">Ładowanie...</p>;
 
   return (
     <div>
+      {isReviewModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg w-full max-w-md relative">
+            <AddReviewComponent
+              propertyId={property?.id}
+              onCancel={closeReviewModal}
+            />
+          </div>
+        </div>
+      )}
       {activeOffers && activeOffers.length > 0 && (
         <div>
           {activeOffers.map((offer) => (
@@ -140,7 +156,7 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
 
       {acceptedOffer && (
         <div>
-          <div>
+          <div className="p-2">
             <Link to={`/property/${acceptedOffer.propertyId}`}>
               <div className="flex flex-col md:flex-row bg-white shadow-md rounded-2xl overflow-hidden mb-4 hover:shadow-lg transition-shadow duration-300">
                 {/* Placeholder na zdjęcie */}
@@ -174,6 +190,13 @@ const MyOfferComponent = ({ currentUserId }: MyOfferComponentProps) => {
               </div>
             </Link>
           </div>
+          <button
+            className="px-4 py-3 bg-[#1b2947] w-[98%] ml-3 flex"
+            onClick={openReviewModal}
+          >
+            Dodaj opinie dla tego mieszkania{" "}
+            <FaCommentMedical className="ml-2 size-5" />
+          </button>
           <div className="mt-6 p-4 border rounded font-semibold bg-grey-100">
             <Accordion.Root
               key={acceptedOffer.id}

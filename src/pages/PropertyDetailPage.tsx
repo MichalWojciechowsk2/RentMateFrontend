@@ -266,9 +266,7 @@ const PropertyDetailPage = () => {
             >
               Wyślij wiadomość
             </button>
-            <p className="text-black">
-              ZROBIĆ WIADOMOŚCI, OCENY, ZDJECIA !!!!!
-            </p>
+            <p className="text-black"></p>
           </div>
         </div>
       </div>

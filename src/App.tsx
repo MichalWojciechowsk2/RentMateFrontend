@@ -16,7 +16,7 @@ import EditPropertyCreateForm from "./pages/EditPropretyWhileCreate";
 import AddPhotos from "./pages/AddPhotos";
 import InboxPage from "./pages/InboxPage";
 import MessagePage from "./pages/MessagePage";
-import AddReviewComponent from "./components/review/addReviewComponent";
+import AddReviewComponent from "./components/review/AddReviewComponent";
 
 const App = () => {
   return (
@@ -107,12 +107,6 @@ const App = () => {
             <PrivateRoute>
               <MessagePage />
             </PrivateRoute>
-          }
-        />
-        <Route
-          path="rewiev"
-          element={
-              <AddReviewComponent/>
           }
         />
       </Route>

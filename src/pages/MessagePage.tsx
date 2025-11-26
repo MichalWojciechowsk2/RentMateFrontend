@@ -6,6 +6,7 @@ import { sendMessage, getChatWithMessages } from "../api/chat";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useRef } from "react";
+import { FaCommentMedical } from "react-icons/fa6";
 
 const TAKE = 12;
 
@@ -113,7 +114,7 @@ const MessagePage = () => {
   if (loading) return <p>Ładowanie czatów...</p>;
 
   return (
-    <div className="flex max-w-6xl mx-auto mt-10 bg-white shadow-lg rounded-xl overflow-hidden h-[80vh]">
+    <div className="flex max-w-7xl mx-auto mt-10 bg-white shadow-lg rounded-xl overflow-hidden h-[80vh]">
       {/* Lewa kolumna - lista czatów */}
       <div
         className={`${chatId ? "w-1/3" : "w-full"} border-r overflow-y-auto`}
@@ -251,6 +252,13 @@ const MessagePage = () => {
               Wyślij
             </button>
           </form>
+        </div>
+      )}
+      {chatId && (
+        <div className="flex items-start ml-2 bg-[#101828]">
+          <button className="absolute top-1/6 right-60 transform -translate-y-1/2 bg-transparent hover:bg-transparent focus:bg-transparent">
+            <FaCommentMedical className="text-[#535BF2] text-4xl" />
+          </button>
         </div>
       )}
     </div>
