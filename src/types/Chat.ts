@@ -5,6 +5,7 @@ export type Chat = {
   chatName: string;
   lastMessageContent: string;
   lastMessageCreateAt: Date;
+  otherUserId: number;
   otherUserPhotoUrl: string;
   otherUserName: string;
 };
