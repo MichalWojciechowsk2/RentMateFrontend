@@ -11,6 +11,9 @@ import type { Property, PropertyImage } from "../types/Property";
 import type { User } from "../types/User";
 import { createPrivateChat } from "../api/chat";
 import { useNavigate } from "react-router-dom";
+import type { ReviewEntity } from "../types/Review";
+import { getAllReviewsForUserByUserId } from "../api/review";
+import { FaStar } from "react-icons/fa";
 
 const PropertyDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,6 +26,7 @@ const PropertyDetailPage = () => {
   const [mainImages, setMainImages] = useState<Record<number, string>>({});
   const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
   const [otherImages, setOtherImages] = useState<PropertyImage[]>([]);
+  const [reviews, setReviews] = useState<ReviewEntity[]>([]);
   const navigate = useNavigate();
 
   const fetchProperty = async (id?: number) => {
@@ -85,10 +89,12 @@ const PropertyDetailPage = () => {
     }
   };
 
-  const fetchUser = async (ownerId: number) => {
+  const fetchUserWithReviews = async (ownerId: number) => {
     setLoading(true);
     try {
       let data = await getUserById(ownerId);
+      let reviews = await getAllReviewsForUserByUserId(data.id);
+      setReviews(reviews);
       setPropertyOwner(data);
       fetchOwnerOtherProperties(ownerId);
     } catch (err) {
@@ -116,7 +122,7 @@ const PropertyDetailPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (property?.ownerId) fetchUser(property.ownerId);
+    if (property?.ownerId) fetchUserWithReviews(property.ownerId);
   }, [property?.ownerId]);
   useEffect(() => {
     console.log("Property owner: ", propertyOwner);
@@ -241,7 +247,7 @@ const PropertyDetailPage = () => {
                   <div>
                     {propertyOwner?.firstName} {propertyOwner?.lastName}
                   </div>
-                  <div>Ocena ⭐</div>
+                  <div>⭐</div>
                 </div>
               </Link>
             </div>
@@ -267,6 +273,39 @@ const PropertyDetailPage = () => {
               Wyślij wiadomość
             </button>
             <p className="text-black"></p>
+          </div>
+          <div className="space-y-4 mt-4">
+            {reviews.length === 0 ? (
+              <p></p>
+            ) : (
+              reviews.map((r) => (
+                <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
+                  {/* Górna część */}
+                  {/* <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold text-gray-800">
+                      {r.reviewerName ?? "Anonim"}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {new Date(r.createdAt).toLocaleDateString("pl-PL", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div> */}
+
+                  {/* Gwiazdki */}
+                  <div className="flex items-center mb-2 text-black">
+                    ⭐ {r.rating}
+                  </div>
+
+                  {/* Opinia */}
+                  <p className="text-gray-700 text-sm whitespace-pre-line">
+                    {r.comment}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

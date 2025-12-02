@@ -1,4 +1,5 @@
 export type ReviewEntity = {
+  propertyId: number;
   userId: number;
   authorId: number;
   rating: number;
