@@ -12,7 +12,7 @@ import type { User } from "../types/User";
 import { createPrivateChat } from "../api/chat";
 import { useNavigate } from "react-router-dom";
 import type { ReviewEntity } from "../types/Review";
-import { getAllReviewsForUserByUserId } from "../api/review";
+import { getLast5ReviewsForUserByUserId, getAvgReview } from "../api/review";
 import { FaStar } from "react-icons/fa";
 
 const PropertyDetailPage = () => {
@@ -27,6 +27,7 @@ const PropertyDetailPage = () => {
   const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
   const [otherImages, setOtherImages] = useState<PropertyImage[]>([]);
   const [reviews, setReviews] = useState<ReviewEntity[]>([]);
+  const [userAvgReview,setUserAvgReview] = useState<number>(0);
   const navigate = useNavigate();
 
   const fetchProperty = async (id?: number) => {
@@ -93,9 +94,11 @@ const PropertyDetailPage = () => {
     setLoading(true);
     try {
       let data = await getUserById(ownerId);
-      let reviews = await getAllReviewsForUserByUserId(data.id);
+      let reviews = await getLast5ReviewsForUserByUserId(data.id);
+      let userAvgReview = await getAvgReview(true,ownerId);
       setReviews(reviews);
       setPropertyOwner(data);
+      setUserAvgReview(userAvgReview);
       fetchOwnerOtherProperties(ownerId);
     } catch (err) {
       console.error("Błąd wczytywania właściciela", err);
@@ -247,7 +250,7 @@ const PropertyDetailPage = () => {
                   <div>
                     {propertyOwner?.firstName} {propertyOwner?.lastName}
                   </div>
-                  <div>⭐</div>
+                  <div>⭐{userAvgReview}</div>
                 </div>
               </Link>
             </div>
