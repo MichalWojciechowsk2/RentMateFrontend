@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export type ReviewEntity = {
   propertyId: number;
   userId: number;
@@ -5,6 +7,7 @@ export type ReviewEntity = {
   rating: number;
   comment: string;
   createdAt: Date;
+  author: User;
 };
 
 export type ReviewDto = {

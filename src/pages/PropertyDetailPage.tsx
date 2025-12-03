@@ -284,18 +284,15 @@ const PropertyDetailPage = () => {
               reviews.map((r) => (
                 <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
                   {/* Górna część */}
-                  {/* <div className="flex justify-between items-center mb-2">
+                  <div className="flex justify-between items-center mb-2">
                     <span className="font-semibold text-gray-800">
-                      {r.reviewerName ?? "Anonim"}
+                      {r.author
+                      ? `${r.author.firstName} ${r.author.lastName}`: "Anonim"}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {new Date(r.createdAt).toLocaleDateString("pl-PL", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {new Date(r.createdAt).toLocaleDateString()}
                     </span>
-                  </div> */}
+                  </div>
 
                   {/* Gwiazdki */}
                   <div className="flex items-center mb-2 text-black">
