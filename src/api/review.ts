@@ -30,10 +30,27 @@ export const getAllReviewsForUserByUserId = async (
     const response = await api.get<ReviewEntity[]>(`/Review/user/${userId}`);
     return response.data;
 }
-
+export const getLast5ReviewsForUserByUserId = async (
+    userId: number
+) : Promise<ReviewEntity[]> => {
+    const response = await api.get<ReviewEntity[]>(`/Review/user/${userId}/last5Reviews`);
+    return response.data;
+}
 export const getAllReviewsForPropertyByPropertyId = async (
     propertyId : number
 ) : Promise <ReviewEntity[]> => {
     const response = await api.get<ReviewEntity[]>(`/Review/property/${propertyId}`);
+    return response.data;
+}
+export const getLast5ReviewsForPropertyByPropertyId = async (
+    propertyId : number
+) : Promise <ReviewEntity[]> => {
+    const response = await api.get<ReviewEntity[]>(`/Review/property/${propertyId}/last5Reviews`);
+    return response.data;
+}
+
+export const getAvgReview = async (isItUser: boolean, objectId: number) : Promise<number> =>
+{
+    const response = await api.get<number>(`/Review/getAvgReview?isItUser=${isItUser}&objectId=${objectId}`);
     return response.data;
 }
