@@ -12,8 +12,13 @@ import type { User } from "../types/User";
 import { createPrivateChat } from "../api/chat";
 import { useNavigate } from "react-router-dom";
 import type { ReviewEntity } from "../types/Review";
-import { getLast5ReviewsForUserByUserId, getAvgReview } from "../api/review";
-import { FaStar } from "react-icons/fa";
+import {
+  getLast5ReviewsForUserByUserId,
+  getAvgReview,
+  getLast5ReviewsForPropertyByPropertyId,
+} from "../api/review";
+import MoreReviewModal from "../components/review/MoreReviewComponent";
+import * as Tabs from "@radix-ui/react-tabs";
 
 const PropertyDetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -26,8 +31,10 @@ const PropertyDetailPage = () => {
   const [mainImages, setMainImages] = useState<Record<number, string>>({});
   const [mainImage, setMainImage] = useState<PropertyImage | null>(null);
   const [otherImages, setOtherImages] = useState<PropertyImage[]>([]);
-  const [reviews, setReviews] = useState<ReviewEntity[]>([]);
-  const [userAvgReview,setUserAvgReview] = useState<number>(0);
+  const [userReviews, setReviews] = useState<ReviewEntity[]>([]);
+  const [propertyReviews, setPropertyReviews] = useState<ReviewEntity[]>([]);
+  const [userAvgReview, setUserAvgReview] = useState<number>(0);
+  const [showMoreReviews, setShowMoreReviews] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const fetchProperty = async (id?: number) => {
@@ -94,12 +101,17 @@ const PropertyDetailPage = () => {
     setLoading(true);
     try {
       let data = await getUserById(ownerId);
-      let reviews = await getLast5ReviewsForUserByUserId(data.id);
-      let userAvgReview = await getAvgReview(true,ownerId);
-      setReviews(reviews);
+      let userReviews = await getLast5ReviewsForUserByUserId(data.id);
+      let propertyReviews = await getLast5ReviewsForPropertyByPropertyId(
+        Number(id)
+      );
+      let userAvgReview = await getAvgReview(true, ownerId);
+      setReviews(userReviews);
+      setPropertyReviews(propertyReviews);
       setPropertyOwner(data);
       setUserAvgReview(userAvgReview);
       fetchOwnerOtherProperties(ownerId);
+      console.log("Property Reviews:", propertyReviews);
     } catch (err) {
       console.error("Błąd wczytywania właściciela", err);
     } finally {
@@ -250,62 +262,148 @@ const PropertyDetailPage = () => {
                   <div>
                     {propertyOwner?.firstName} {propertyOwner?.lastName}
                   </div>
-                  <div>⭐{userAvgReview}</div>
+                  <div>⭐{userAvgReview.toFixed(2)}</div>
                 </div>
               </Link>
             </div>
             {!ownerNumberActive ? (
               <button
-                className="w-1/1 mb-2 bg-[#101828]"
+                className="w-1/1 mb-2 bg-[#1d2b4b]"
                 onClick={() => setOwnerNumberActive(true)}
               >
                 Wyświetl numer
               </button>
             ) : (
               <button
-                className="w-full mb-2 bg-[#101828]"
+                className="w-full mb-2 bg-[#1d2b4b]"
                 onClick={() => setOwnerNumberActive(false)}
               >
                 {propertyOwner?.phoneNumber}
               </button>
             )}
             <button
-              className="w-full bg-[#101828]"
+              className="w-full bg-[#1d2b4b]"
               onClick={() => handleSendMessage(propertyOwner?.id!)}
             >
               Wyślij wiadomość
             </button>
             <p className="text-black"></p>
           </div>
-          <div className="space-y-4 mt-4">
-            {reviews.length === 0 ? (
-              <p></p>
-            ) : (
-              reviews.map((r) => (
-                <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
-                  {/* Górna część */}
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold text-gray-800">
-                      {r.author
-                      ? `${r.author.firstName} ${r.author.lastName}`: "Anonim"}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(r.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
+          <div>
+            <Tabs.Root className="TabsRoot" defaultValue="user">
+              <Tabs.List className="TabsList" aria-label="Manage your account">
+                <Tabs.Trigger className="TabsTrigger" value="user">
+                  {" "}
+                  Użytkownik{" "}
+                </Tabs.Trigger>
+                <Tabs.Trigger className="TabsTrigger" value="property">
+                  {" "}
+                  Mieszkanie{" "}
+                </Tabs.Trigger>
+              </Tabs.List>
+              <Tabs.Content className="TabsContent" value="user">
+                <div className="space-y-4 mt-4">
+                  {userReviews.length === 0 ? (
+                    <p></p>
+                  ) : (
+                    userReviews.slice(0, 4).map((r) => (
+                      <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
+                        {/* Górna część */}
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-semibold text-gray-800">
+                            {r.author
+                              ? `${r.author.firstName} ${r.author.lastName}`
+                              : "Anonim"}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(r.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
 
-                  {/* Gwiazdki */}
-                  <div className="flex items-center mb-2 text-black">
-                    ⭐ {r.rating}
-                  </div>
+                        {/* Gwiazdki */}
+                        <div className="flex items-center mb-2 text-black">
+                          ⭐ {r.rating}
+                        </div>
 
-                  {/* Opinia */}
-                  <p className="text-gray-700 text-sm whitespace-pre-line">
-                    {r.comment}
-                  </p>
+                        {/* Opinia */}
+                        <p className="text-gray-700 text-sm whitespace-pre-line">
+                          {r.comment}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                  {userReviews.length > 4 ? (
+                    <div>
+                      <button
+                        className="w-full bg-[#1d2b4b] text-sm"
+                        onClick={() => setShowMoreReviews(true)}
+                      >
+                        Zobacz więcej opinii o użytkowniku
+                      </button>
+                      <MoreReviewModal
+                        isOpen={showMoreReviews}
+                        onClose={() => setShowMoreReviews(false)}
+                        isUserReviews={true}
+                        objectId={propertyOwner?.id!}
+                      />
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
-              ))
-            )}
+              </Tabs.Content>
+              <Tabs.Content className="TabsContent" value="property">
+                <div className="space-y-4 mt-4">
+                  {propertyReviews.length === 0 ? (
+                    <p></p>
+                  ) : (
+                    propertyReviews.slice(0, 4).map((r) => (
+                      <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
+                        {/* Górna część */}
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-semibold text-gray-800">
+                            {r.author
+                              ? `${r.author.firstName} ${r.author.lastName}`
+                              : "Anonim"}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(r.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+
+                        {/* Gwiazdki */}
+                        <div className="flex items-center mb-2 text-black">
+                          ⭐ {r.rating}
+                        </div>
+
+                        {/* Opinia */}
+                        <p className="text-gray-700 text-sm whitespace-pre-line">
+                          {r.comment}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                  {propertyReviews.length > 4 ? (
+                    <div>
+                      <button
+                        className="w-full bg-[#1d2b4b] text-sm"
+                        onClick={() => setShowMoreReviews(true)}
+                      >
+                        Zobacz więcej opinii o mieszkaniu
+                      </button>
+                      <MoreReviewModal
+                        isOpen={showMoreReviews}
+                        onClose={() => setShowMoreReviews(false)}
+                        isUserReviews={false}
+                        objectId={Number(id)}
+                      />
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </Tabs.Content>
+            </Tabs.Root>
           </div>
         </div>
       </div>
