@@ -31,7 +31,11 @@ export default function MoreReviewModal({
   };
 
   useEffect(() => {
-    if (isOpen) fetchReviews(objectId);
+    if (isOpen) {
+      fetchReviews(objectId);
+    } else {
+      setReviews([]);
+    }
   }, [objectId, isUserReviews, isOpen]);
 
   if (!isOpen) return null;
@@ -51,28 +55,33 @@ export default function MoreReviewModal({
         </div>
 
         {/* Lista opinii */}
-        {reviews.map((r) => (
-          <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl shadow-sm">
-            <div className="flex justify-between items-center mb-2">
-              <span className="font-semibold text-gray-800">
-                {r.author
-                  ? `${r.author.firstName} ${r.author.lastName}`
-                  : "Anonim"}
-              </span>
-              <span className="text-xs text-gray-500">
-                {new Date(r.createdAt).toLocaleDateString()}
-              </span>
-            </div>
+        {reviews
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+          .map((r) => (
+            <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl shadow-sm">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-semibold text-gray-800">
+                  {r.author
+                    ? `${r.author.firstName} ${r.author.lastName}`
+                    : "Anonim"}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {new Date(r.createdAt).toLocaleDateString()}
+                </span>
+              </div>
 
-            <div className="flex items-center mb-2 text-black">
-              ⭐ {r.rating}
-            </div>
+              <div className="flex items-center mb-2 text-black">
+                ⭐ {r.rating}
+              </div>
 
-            <p className="text-gray-700 text-sm whitespace-pre-line">
-              {r.comment}
-            </p>
-          </div>
-        ))}
+              <p className="text-gray-700 text-sm whitespace-pre-line">
+                {r.comment}
+              </p>
+            </div>
+          ))}
       </div>
     </div>
   );

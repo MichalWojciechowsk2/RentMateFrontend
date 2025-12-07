@@ -1,4 +1,4 @@
-import { data, Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   GetPropertyById,
@@ -34,7 +34,10 @@ const PropertyDetailPage = () => {
   const [userReviews, setReviews] = useState<ReviewEntity[]>([]);
   const [propertyReviews, setPropertyReviews] = useState<ReviewEntity[]>([]);
   const [userAvgReview, setUserAvgReview] = useState<number>(0);
-  const [showMoreReviews, setShowMoreReviews] = useState<boolean>(false);
+  const [showMoreUserReviews, setShowMoreUserReviews] =
+    useState<boolean>(false);
+  const [showMorePropertyReviews, setShowMorePropertyReviews] = useState(false);
+
   const navigate = useNavigate();
 
   const fetchProperty = async (id?: number) => {
@@ -290,13 +293,44 @@ const PropertyDetailPage = () => {
             <p className="text-black"></p>
           </div>
           <div>
-            <Tabs.Root className="TabsRoot" defaultValue="user">
+            <div className="text-black mb-2 text-xl">Opinie</div>
+            <Tabs.Root className="TabsRoot text-cent" defaultValue="user">
               <Tabs.List className="TabsList" aria-label="Manage your account">
-                <Tabs.Trigger className="TabsTrigger" value="user">
+                <Tabs.Trigger
+                  className="px-4 py-2
+    font-semibold
+    text-gray-600
+    bg-gray-300
+    rounded-xl
+    transition-all
+    duration-200
+    data-[state=active]:bg-[#1d2b4b]
+    data-[state=active]:text-white
+    data-[state=active]:shadow-md
+    hover:bg-gray-100
+    hover:text-gray-800
+    w-[50%]"
+                  value="user"
+                >
                   {" "}
                   Użytkownik{" "}
                 </Tabs.Trigger>
-                <Tabs.Trigger className="TabsTrigger" value="property">
+                <Tabs.Trigger
+                  className="px-4 py-2
+    font-semibold
+    text-gray-600
+    bg-gray-300
+    rounded-xl
+    transition-all
+    duration-200
+    data-[state=active]:bg-[#1d2b4b]
+    data-[state=active]:text-white
+    data-[state=active]:shadow-md
+    hover:bg-gray-100
+    hover:text-gray-800
+    w-[50%]"
+                  value="property"
+                >
                   {" "}
                   Mieszkanie{" "}
                 </Tabs.Trigger>
@@ -336,13 +370,13 @@ const PropertyDetailPage = () => {
                     <div>
                       <button
                         className="w-full bg-[#1d2b4b] text-sm"
-                        onClick={() => setShowMoreReviews(true)}
+                        onClick={() => setShowMoreUserReviews(true)}
                       >
                         Zobacz więcej opinii o użytkowniku
                       </button>
                       <MoreReviewModal
-                        isOpen={showMoreReviews}
-                        onClose={() => setShowMoreReviews(false)}
+                        isOpen={showMoreUserReviews}
+                        onClose={() => setShowMoreUserReviews(false)}
                         isUserReviews={true}
                         objectId={propertyOwner?.id!}
                       />
@@ -387,13 +421,13 @@ const PropertyDetailPage = () => {
                     <div>
                       <button
                         className="w-full bg-[#1d2b4b] text-sm"
-                        onClick={() => setShowMoreReviews(true)}
+                        onClick={() => setShowMorePropertyReviews(true)}
                       >
                         Zobacz więcej opinii o mieszkaniu
                       </button>
                       <MoreReviewModal
-                        isOpen={showMoreReviews}
-                        onClose={() => setShowMoreReviews(false)}
+                        isOpen={showMorePropertyReviews}
+                        onClose={() => setShowMorePropertyReviews(false)}
                         isUserReviews={false}
                         objectId={Number(id)}
                       />
