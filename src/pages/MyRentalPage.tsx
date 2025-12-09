@@ -2,12 +2,16 @@ import * as Tabs from "@radix-ui/react-tabs";
 import MyOfferComponent from "../components/my-rental/MyOfferComponent.tsx";
 import PaymentTenantComponent from "../components/my-rental/Payments/PaymentTenantComponent.tsx";
 import PropertyChatComponent from "../components/my-rental/PropertyChatComponent.tsx";
+import AddIssueFormComponent from "../components/my-rental/Issues/AddIssueFormComponent.tsx";
+import TenantIssuesList from "../components/my-rental/Issues/TenantIssuesList.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
 
+// 1. Dodałem nową zakładkę "problemy" do listy
 const tabs = [
   { value: "oferta", label: "oferta" },
   { value: "rachunki", label: "rachunki" },
   { value: "chat", label: "chat" },
+  { value: "problemy", label: "Zgłoś problem" },
 ];
 
 export default function MyRentalPage() {
@@ -15,7 +19,7 @@ export default function MyRentalPage() {
 
   return (
     <div className="p-6">
-      <Tabs.Root className="w-full" defaultValue="oferta">
+      <Tabs.Root className="w-full" defaultValue="problemy">
         <Tabs.List className="flex w-full border-b border-gray-300">
           {tabs.map(({ value, label }) => (
             <Tabs.Trigger
@@ -48,15 +52,28 @@ export default function MyRentalPage() {
           ))}
         </Tabs.List>
 
-        <div className="bg-[#F1F5F9]">
+        <div className="bg-[#F1F5F9] p-4"> {/* Dodałem p-4 dla ładniejszego odstępu */}
+
           <Tabs.Content value="oferta">
             <MyOfferComponent currentUserId={user?.id} />
           </Tabs.Content>
+
           <Tabs.Content value="rachunki">
             <PaymentTenantComponent />
           </Tabs.Content>
+
           <Tabs.Content value="chat">
             <PropertyChatComponent currentUserId={user?.id} />
+          </Tabs.Content>
+
+          <Tabs.Content value="problemy">
+            <div className="bg-white p-4 rounded shadow-sm">
+              <AddIssueFormComponent
+                propertyId={1}
+                onSuccess={() => window.location.reload()}
+              />
+              <TenantIssuesList />
+            </div>
           </Tabs.Content>
         </div>
       </Tabs.Root>
