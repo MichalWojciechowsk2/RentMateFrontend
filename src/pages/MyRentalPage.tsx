@@ -2,17 +2,21 @@ import * as Tabs from "@radix-ui/react-tabs";
 import MyOfferComponent from "../components/my-rental/MyOfferComponent.tsx";
 import PaymentTenantComponent from "../components/my-rental/Payments/PaymentTenantComponent.tsx";
 import PropertyChatComponent from "../components/my-rental/PropertyChatComponent.tsx";
+import AddIssueFormComponent from "../components/my-rental/Issues/AddIssueFormComponent.tsx";
+import TenantIssuesList from "../components/my-rental/Issues/TenantIssuesList.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
+import { useState } from "react";
 
 const tabs = [
   { value: "oferta", label: "oferta" },
   { value: "rachunki", label: "rachunki" },
   { value: "chat", label: "chat" },
+  { value: "problemy", label: "Zgłoś problem" },
 ];
 
 export default function MyRentalPage() {
   const { currentUser: user } = useAuth();
-
+  const [refreshIssues, setRefreshIssues] = useState<number>(0);
   return (
     <div className="p-6">
       <Tabs.Root className="w-full" defaultValue="oferta">
@@ -48,7 +52,8 @@ export default function MyRentalPage() {
           ))}
         </Tabs.List>
 
-        <div className="bg-[#F1F5F9]">
+        <div className="bg-[#F1F5F9] p-4">
+          {" "}
           <Tabs.Content value="oferta">
             <MyOfferComponent currentUserId={user?.id} />
           </Tabs.Content>
@@ -57,6 +62,15 @@ export default function MyRentalPage() {
           </Tabs.Content>
           <Tabs.Content value="chat">
             <PropertyChatComponent currentUserId={user?.id} />
+          </Tabs.Content>
+          <Tabs.Content value="problemy">
+            <div className="bg-white p-4 rounded shadow-sm">
+              <AddIssueFormComponent
+                userId={user?.id}
+                onSuccess={() => setRefreshIssues((prev) => prev + 1)}
+              />
+              <TenantIssuesList refresh={refreshIssues} />
+            </div>
           </Tabs.Content>
         </div>
       </Tabs.Root>

@@ -7,6 +7,7 @@ import PropertyComponent from "../components/my-properties/Property/PropertyComp
 import OfferComponent from "../components/my-properties/Offer/OfferComponent";
 import PaymentOwnerComponent from "../components/my-properties/Payments/PaymentOwnerComponent";
 import PropertyChatComponent from "../components/my-rental/PropertyChatComponent";
+import PropertyIssuesComponent from "../components/my-properties/Issues/PropertyIssuesComponent";
 import { useAuth } from "../context/AuthContext";
 
 const tabs = [
@@ -93,6 +94,11 @@ const MenagePropertyPage = () => {
             </Tabs.Content>
             <Tabs.Content value="payments">
               <PaymentOwnerComponent propertyId={Number(id)} />
+            </Tabs.Content>
+            <Tabs.Content value="problems">
+              <div className="pt-6">
+                <PropertyIssuesComponent propertyId={Number(id)} />
+              </div>
             </Tabs.Content>
             <Tabs.Content value="chat">
               <PropertyChatComponent
