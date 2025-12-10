@@ -5,8 +5,8 @@ import PropertyChatComponent from "../components/my-rental/PropertyChatComponent
 import AddIssueFormComponent from "../components/my-rental/Issues/AddIssueFormComponent.tsx";
 import TenantIssuesList from "../components/my-rental/Issues/TenantIssuesList.tsx";
 import { useAuth } from "../context/AuthContext.tsx";
+import { useState } from "react";
 
-// 1. Dodałem nową zakładkę "problemy" do listy
 const tabs = [
   { value: "oferta", label: "oferta" },
   { value: "rachunki", label: "rachunki" },
@@ -16,10 +16,10 @@ const tabs = [
 
 export default function MyRentalPage() {
   const { currentUser: user } = useAuth();
-
+  const [refreshIssues, setRefreshIssues] = useState<number>(0);
   return (
     <div className="p-6">
-      <Tabs.Root className="w-full" defaultValue="problemy">
+      <Tabs.Root className="w-full" defaultValue="oferta">
         <Tabs.List className="flex w-full border-b border-gray-300">
           {tabs.map(({ value, label }) => (
             <Tabs.Trigger
@@ -52,27 +52,24 @@ export default function MyRentalPage() {
           ))}
         </Tabs.List>
 
-        <div className="bg-[#F1F5F9] p-4"> {/* Dodałem p-4 dla ładniejszego odstępu */}
-
+        <div className="bg-[#F1F5F9] p-4">
+          {" "}
           <Tabs.Content value="oferta">
             <MyOfferComponent currentUserId={user?.id} />
           </Tabs.Content>
-
           <Tabs.Content value="rachunki">
             <PaymentTenantComponent />
           </Tabs.Content>
-
           <Tabs.Content value="chat">
             <PropertyChatComponent currentUserId={user?.id} />
           </Tabs.Content>
-
           <Tabs.Content value="problemy">
             <div className="bg-white p-4 rounded shadow-sm">
               <AddIssueFormComponent
-                propertyId={1}
-                onSuccess={() => window.location.reload()}
+                userId={user?.id}
+                onSuccess={() => setRefreshIssues((prev) => prev + 1)}
               />
-              <TenantIssuesList />
+              <TenantIssuesList refresh={refreshIssues} />
             </div>
           </Tabs.Content>
         </div>
