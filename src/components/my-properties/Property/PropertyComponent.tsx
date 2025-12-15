@@ -182,7 +182,7 @@ const PropertyComponent = ({ onRefetch }: Props) => {
               <img
                 src={mainImage.imageUrl}
                 alt="Główne zdjęcie"
-                className="w-full aspect-video object-cover rounded-lg shadow"
+                className="mx-auto w-[70%] aspect-video object-cover rounded-lg shadow"
               />
             ) : loading ? (
               <div className="bg-gray-300 w-full aspect-video flex items-center justify-center rounded-lg">
@@ -206,7 +206,7 @@ const PropertyComponent = ({ onRefetch }: Props) => {
                     key={index}
                     src={img.imageUrl}
                     alt={`Zdjęcie ${index + 1}`}
-                    className="aspect-video object-cover rounded-lg shadow"
+                    className="aspect-video object-cover rounded-lg shadow w-75"
                   />
                 ))}
               </div>
@@ -263,16 +263,6 @@ const PropertyComponent = ({ onRefetch }: Props) => {
               })}
             </div>
           )}
-        </div>
-        <div className="text-black mt-10">
-          <div>
-            Licznik wejść na oferte (jeśli zostanie opublikowana ponownie to
-            wtedy się zeruje) (od ostatniej publikacji)
-          </div>
-          <div>
-            Komentarze (Których właściciel nie może usunąć ale może skontaktować
-            się z osobą która ten komentarz napisała)
-          </div>
         </div>
       </div>
     </div>

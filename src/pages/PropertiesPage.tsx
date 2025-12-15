@@ -27,7 +27,7 @@ const PropertiesPage = () => {
   const [mainImages, setMainImages] = useState<Record<number, string>>({});
   const [pageNumber, setPageNumber] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 2;
+  const pageSize = 10;
 
   useEffect(() => {
     getCities()
