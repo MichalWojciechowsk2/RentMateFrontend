@@ -10,6 +10,7 @@ export type Payment = {
   dueDate: string;
   paidAt: string;
   paymentMethod: string;
+  bankAccountNumber?: string;
   // offer: Offer;
 };
 export type PaymentWithTenantName = {
@@ -24,6 +25,7 @@ export type PaymentWithTenantName = {
   dueDate: string;
   paidAt: string;
   paymentMethod: string;
+  bankAccountNumber?: string;
 };
 
 export type CreatePayment = {
@@ -35,6 +37,7 @@ export type CreatePayment = {
   paymentMethod: string;
   generateWithRecurring: boolean;
   recurrenceTimes: number;
+  bankAccountNumber?: string;
 };
 
 export const PaymentStatus = {

@@ -25,6 +25,7 @@ const CreatePaymentFormComponent = ({
     paymentMethod: "",
     generateWithRecurring: false,
     recurrenceTimes: 0,
+    bankAccountNumber: "",
   });
   const acceptedOffers =
     offers?.filter((o) => o.status === OfferStatus.Accepted) ?? [];
@@ -54,9 +55,11 @@ const CreatePaymentFormComponent = ({
     if (!form.paymentMethod.trim())
       newErrors.paymentMethod = "Podaj metodę płatności.";
 
-    if (form.generateWithRecurring && form.recurrenceTimes <= 0) {
-      newErrors.recurrenceTimes =
-        "Liczba powtórzeń musi być większa od zera lub wybierz 'do końca trwania umowy'.";
+    if (form.generateWithRecurring) {
+      if (form.recurrenceTimes === 0) {
+        newErrors.recurrenceTimes =
+          "Podaj liczbę powtórzeń lub wybierz 'do końca trwania umowy'.";
+      }
     }
 
     setErrors(newErrors);
@@ -75,6 +78,7 @@ const CreatePaymentFormComponent = ({
       paymentMethod: form.paymentMethod,
       generateWithRecurring: form.generateWithRecurring,
       recurrenceTimes: form.recurrenceTimes,
+      bankAccountNumber: form.bankAccountNumber,
     });
     onCancel();
   };
@@ -152,6 +156,30 @@ const CreatePaymentFormComponent = ({
           />
           {errors.description && (
             <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="bankAccountNumber" className="block mb-1 font-medium">
+            Numer konta bankowego*
+          </label>
+          <input
+            id="bankAccountNumber"
+            type="text"
+            className="w-full border p-2 rounded"
+            value={form.bankAccountNumber}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                bankAccountNumber: e.target.value,
+              }))
+            }
+            required
+          />
+          {errors.bankAccountNumber && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.bankAccountNumber}
+            </p>
           )}
         </div>
 

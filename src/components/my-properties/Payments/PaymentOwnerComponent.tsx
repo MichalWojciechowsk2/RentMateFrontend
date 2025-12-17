@@ -1,12 +1,3 @@
-// Kontrolowanie rachunków, dodać w encji za co jest to rachunek (Kaucja, Szkody, dodatkowe opłaty).
-//Właściciel do dodatkowych opłat powinien móc dodać notatkę i zdjęcie np rachunku ile wyszło za prąd, gaz etc.
-//Właściciel może ustawić cykliczne generowanie i wysyłanie rachunków do najemców
-//Właściciel może wybrać czy do wszystkich wysyła ten rachunek czy do pojedyńczej osoby bo np ktoś kto ma większy pokój płaci więcej etc
-//Kolor zielony (wszyscy opłacili), niebieski (w trakcie opłacania), czerwony już jest po terminie na wpłatę
-//Zakładka jakaś na to żeby właściciel mógł edytować te oferty które wysyłane są cyklicznie
-//Filtrowanie po jednym najemcy
-//Dodać max 10 ostatnich rachunków a pod spodem rozwijana lista cyklicznych rachunków żeby właściciel mógł edytować, zatrzymać ten rachunek itd
-
 import React from "react";
 import { useState, useEffect } from "react";
 import CreatePaymentFormComponent from "../Payments/CreatePaymentFormComponent";
@@ -104,6 +95,7 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
                 <th className="px-4 py-2">Najemca</th>
                 <th className="px-4 py-2">Kwota</th>
                 <th className="px-4 py-2">Opis</th>
+                <th className="px-4 py-2">Nr konta</th>
                 <th className="px-4 py-2">Termin płatności</th>
               </tr>
             </thead>
@@ -119,18 +111,22 @@ const PaymentOwnerComponent = ({ propertyId }: PaymentOwnerComponentsProps) => {
                     key={payment.id}
                     className="border-t border-gray-200 hover:bg-gray-50 transition"
                   >
-                    <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[10%]">
                       {payment.tenantName} {payment.tenantSurname}
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[10%]">
                       {payment.amount.toFixed(2)} zł
                     </td>
-                    <td className="px-4 py-2 text-sm text-gray-800 w-[50%]">
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[35%]">
                       {payment.description}
                     </td>
                     <td className="px-4 py-2 text-sm text-gray-800 w-[25%]">
+                      {payment.bankAccountNumber}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-gray-800 w-[20%]">
                       {new Date(payment.dueDate).toLocaleDateString("pl-PL")}
                     </td>
+
                     <td>
                       <button
                         onClick={() => handleDeactivatePayment(payment.id)}
