@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CreateOffer } from "../../../types/Offer";
+import { searchUser } from "../../../api/users";
+import type { User } from "../../../types/User";
 
 type CreateOfferFormProps = {
   onCancel: () => void;
@@ -22,6 +24,26 @@ const CreateOfferFormComponent = ({
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tenantSearch, setTenantSearch] = useState("");
+  const [tenantResults, setTenantResults] = useState<User[]>([]);
+  const [loadingTenants, setLoadingTenants] = useState(false);
+
+  useEffect(() => {
+    if (!tenantSearch.trim()) {
+      setTenantResults([]);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setLoadingTenants(true);
+
+      searchUser(tenantSearch)
+        .then((users) => setTenantResults(users))
+        .finally(() => setLoadingTenants(false));
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [tenantSearch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -116,18 +138,37 @@ const CreateOfferFormComponent = ({
           />
         </div>
 
-        <div className="md:col-span-2">
-          <label className="block mb-1">ID najemcy (tenantId):</label>
+        <div className="md:col-span-2 relative">
+          <label className="block mb-1">Najemca:</label>
+
           <input
-            type="number"
-            name="tenantId"
-            value={form.tenantId}
-            onChange={handleChange}
+            type="text"
+            value={tenantSearch}
+            onChange={(e) => setTenantSearch(e.target.value)}
             className="border p-2 rounded w-full"
-            required
+            placeholder="Wpisz imię i nazwisko"
           />
-          {errorMessage && (
-            <p className="text-red-500 text-sm mt-1">{errorMessage}</p>
+
+          {loadingTenants && (
+            <p className="text-sm text-gray-500 mt-1">Szukam…</p>
+          )}
+
+          {tenantResults.length > 0 && (
+            <ul className="absolute z-10 w-full bg-white border rounded shadow max-h-48 overflow-y-auto mt-1">
+              {tenantResults.map((u) => (
+                <li
+                  key={u.id}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    setForm((prev) => ({ ...prev, tenantId: u.id }));
+                    setTenantSearch(`${u.firstName} ${u.lastName}`);
+                    setTenantResults([]);
+                  }}
+                >
+                  {u.firstName} {u.lastName} ({u.id})
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 

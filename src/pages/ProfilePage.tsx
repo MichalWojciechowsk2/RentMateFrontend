@@ -126,6 +126,13 @@ const ProfilePage = () => {
           <p className="text-gray-500">{user.email}</p>
         </div>
 
+        <div className="mt-2 space-y-2 text-black">
+          <p>
+            <span className="font-semibold">Id: </span>
+            {user.id || "Brak"}
+          </p>
+        </div>
+
         {/* Dane kontaktowe */}
         <div className="mt-2 space-y-2 text-black">
           <p>

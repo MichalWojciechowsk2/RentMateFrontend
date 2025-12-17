@@ -80,135 +80,145 @@ const AddIssueFormComponent: React.FC<AddIssueFormProps> = ({
   };
 
   return (
-    <div
-      style={{
-        padding: "20px",
-        maxWidth: "100%",
-        background: "#fff",
-        borderRadius: "8px",
-        border: "1px solid #e2e8f0",
-      }}
-    >
-      <h3 className="text-xl font-bold mb-4 text-gray-800">
-        Zgłoś nową usterkę
-      </h3>
+    <div>
+      {!propertyId && (
+        <p className="text-gray-700 text-2xl p-4 font-semibold">
+          Brak dostępnych ofert.
+        </p>
+      )}
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "15px" }}
-      >
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <label
-            style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}
-          >
-            Typ problemu
-          </label>
-          <select
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="form-select text-black"
-            style={{
-              padding: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              color: "black",
-              backgroundColor: "white",
-            }}
-          >
-            {issueTypes.map((type) => (
-              <option key={type} value={type} style={{ color: "black" }}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <label
-            style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}
-          >
-            Opis problemu
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            rows={4}
-            placeholder="Opisz dokładnie co się dzieje..."
-            style={{
-              padding: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              resize: "vertical",
-              color: "black",
-              backgroundColor: "white",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <label
-            style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}
-          >
-            Priorytet
-          </label>
-          <select
-            value={urgency}
-            onChange={(e) => setUrgency(Number(e.target.value))}
-            className="form-select text-black"
-            style={{
-              padding: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              color: "black",
-              backgroundColor: "white",
-            }}
-          >
-            <option value={0} style={{ color: "black" }}>
-              Niski
-            </option>
-            <option value={1} style={{ color: "black" }}>
-              Średni
-            </option>
-            <option value={2} style={{ color: "black" }}>
-              Wysoki
-            </option>
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
+      {propertyId && (
+        <div
           style={{
-            padding: "12px",
-            marginTop: "10px",
-            background: "#0ea5e9",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: isSubmitting ? "not-allowed" : "pointer",
-            fontWeight: "bold",
+            padding: "20px",
+            maxWidth: "100%",
+            background: "#fff",
+            borderRadius: "8px",
+            border: "1px solid #e2e8f0",
           }}
         >
-          {isSubmitting ? "Wysyłanie..." : "Wyślij problem"}
-        </button>
+          <h3 className="text-xl font-bold mb-4 text-gray-800">
+            Zgłoś nową usterkę
+          </h3>
 
-        {message && (
-          <div
-            style={{
-              padding: "10px",
-              marginTop: "10px",
-              borderRadius: "4px",
-              background: isError ? "#ffebee" : "#e8f5e9",
-              color: isError ? "#c62828" : "#2e7d32",
-              textAlign: "center",
-              fontWeight: "500",
-            }}
+          <form
+            onSubmit={handleSubmit}
+            style={{ display: "flex", flexDirection: "column", gap: "15px" }}
           >
-            {message}
-          </div>
-        )}
-      </form>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label
+                style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}
+              >
+                Typ problemu
+              </label>
+              <select
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="form-select text-black"
+                style={{
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  color: "black",
+                  backgroundColor: "white",
+                }}
+              >
+                {issueTypes.map((type) => (
+                  <option key={type} value={type} style={{ color: "black" }}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label
+                style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}
+              >
+                Opis problemu
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={4}
+                placeholder="Opisz dokładnie co się dzieje..."
+                style={{
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  resize: "vertical",
+                  color: "black",
+                  backgroundColor: "white",
+                }}
+              />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <label
+                style={{ fontSize: "14px", color: "#666", marginBottom: "5px" }}
+              >
+                Priorytet
+              </label>
+              <select
+                value={urgency}
+                onChange={(e) => setUrgency(Number(e.target.value))}
+                className="form-select text-black"
+                style={{
+                  padding: "10px",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  color: "black",
+                  backgroundColor: "white",
+                }}
+              >
+                <option value={0} style={{ color: "black" }}>
+                  Niski
+                </option>
+                <option value={1} style={{ color: "black" }}>
+                  Średni
+                </option>
+                <option value={2} style={{ color: "black" }}>
+                  Wysoki
+                </option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                padding: "12px",
+                marginTop: "10px",
+                background: "#0ea5e9",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: isSubmitting ? "not-allowed" : "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              {isSubmitting ? "Wysyłanie..." : "Wyślij problem"}
+            </button>
+
+            {message && (
+              <div
+                style={{
+                  padding: "10px",
+                  marginTop: "10px",
+                  borderRadius: "4px",
+                  background: isError ? "#ffebee" : "#e8f5e9",
+                  color: isError ? "#c62828" : "#2e7d32",
+                  textAlign: "center",
+                  fontWeight: "500",
+                }}
+              >
+                {message}
+              </div>
+            )}
+          </form>
+        </div>
+      )}
     </div>
   );
 };

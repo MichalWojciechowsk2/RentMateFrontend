@@ -20,7 +20,6 @@ export const uploadUserPhoto = async (photo: File): Promise<any> => {
 
 export const getUserPhoto = async (): Promise<string> => {
   const response = await api.get<string>("User/userPhoto");
-  console.log(`mam zdjęcie: ${response.data} `);
   return response.data;
 };
 
@@ -38,5 +37,12 @@ export const updateUserFields = async (
     value,
   });
 
+  return response.data;
+};
+
+export const searchUser = async (searchTerm: string): Promise<User[]> => {
+  const response = await api.get<User[]>(
+    `User/search?searchTerm=${searchTerm}`
+  );
   return response.data;
 };
