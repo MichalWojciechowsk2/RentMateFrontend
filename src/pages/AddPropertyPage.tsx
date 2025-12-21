@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { createProperty, getCities, getDistricts } from "../api/property";
-import type { City, District } from "../types/Location";
+import { useState } from "react";
+import { createProperty } from "../api/property";
 import { CITY_ID_TO_ENUM } from "../types/Location";
 import { useNavigate } from "react-router-dom";
 import { GrNext } from "react-icons/gr";
+import { CITY_DISTRICTS, CITIES } from "../types/Cities";
 
 const AddPropertyForm = () => {
   const [form, setForm] = useState({
@@ -20,21 +20,7 @@ const AddPropertyForm = () => {
     isActive: 1,
   });
 
-  const [cities, setCities] = useState<City[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getCities().then(setCities).catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    if (form.city) {
-      getDistricts(form.city).then(setDistricts).catch(console.error);
-    } else {
-      setDistricts([]);
-    }
-  }, [form.city]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -56,7 +42,7 @@ const AddPropertyForm = () => {
         area: parseFloat(form.area),
         district: form.district,
         roomCount: parseInt(form.roomCount),
-        city: CITY_ID_TO_ENUM[Number(form.city)],
+        city: form.city,
         postalCode: form.postalCode.trim(),
         basePrice: parseFloat(form.basePrice),
         baseDeposit: parseFloat(form.baseDeposit),
@@ -109,9 +95,9 @@ const AddPropertyForm = () => {
             <option value="" className="text-black">
               -- Wybierz miasto --
             </option>
-            {cities.map((c) => (
-              <option className="text-black" key={c.name} value={c.name}>
-                {c.name}
+            {CITIES.map((city) => (
+              <option key={city} value={city} className="text-black">
+                {city}
               </option>
             ))}
           </select>
@@ -122,18 +108,19 @@ const AddPropertyForm = () => {
             name="district"
             value={form.district}
             onChange={handleChange}
-            className="border p-2 rounded w-full"
             disabled={!form.city}
+            className="border p-2 rounded w-full"
             required
           >
             <option value="" className="text-black">
-              -- Wybierz dzielnicę --
+              -- Wybierz osiedle --
             </option>
-            {districts.map((d) => (
-              <option key={d.name} value={d.name} className="text-black">
-                {d.name}
-              </option>
-            ))}
+            {form.city &&
+              CITY_DISTRICTS[form.city]?.map((district) => (
+                <option key={district} value={district} className="text-black">
+                  {district}
+                </option>
+              ))}
           </select>
         </div>
         <div>
