@@ -70,7 +70,7 @@ const AddPropertyForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 rounded-xl shadow-md mt-6">
-      <h2 className="text-2xl font-bold mb-4">Dodaj nowe mieszkanie</h2>
+      <h2 className="text-2xl font-bold mb-4">Dodaj nowe ogłosznie</h2>
 
       <form
         onSubmit={handleSubmit}
@@ -110,7 +110,7 @@ const AddPropertyForm = () => {
               -- Wybierz miasto --
             </option>
             {cities.map((c) => (
-              <option key={c.id} value={c.id} className="text-black">
+              <option className="text-black" key={c.name} value={c.name}>
                 {c.name}
               </option>
             ))}
@@ -130,7 +130,7 @@ const AddPropertyForm = () => {
               -- Wybierz dzielnicę --
             </option>
             {districts.map((d) => (
-              <option key={d.id} value={d.enumName} className="text-black">
+              <option key={d.name} value={d.name} className="text-black">
                 {d.name}
               </option>
             ))}

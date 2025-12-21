@@ -9,6 +9,7 @@ type RegisterForm = {
   lastName: string;
   phoneNumber: string;
   password: string;
+  passwordConfirm: string;
   role: "Tenant" | "Owner" | "Admin";
 };
 
@@ -23,6 +24,7 @@ const RegisterPage = () => {
     lastName: "",
     phoneNumber: "",
     password: "",
+    passwordConfirm: "",
     role: "Tenant",
   });
 
@@ -37,6 +39,13 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (form.password !== form.passwordConfirm) {
+      setError("Hasła nie są takie same");
+      return;
+    }
+
     try {
       await register({
         email: form.email,
@@ -106,17 +115,15 @@ const RegisterPage = () => {
         required
         className="w-full border p-2 mb-4"
       />
-
-      <select
-        name="role"
-        value={form.role}
+      <input
+        name="passwordConfirm"
+        type="password"
+        value={form.passwordConfirm}
         onChange={handleChange}
+        placeholder="Powtórz hasło"
+        required
         className="w-full border p-2 mb-4"
-      >
-        <option value="Tenant">Najemca</option>
-        <option value="Owner">Właściciel</option>
-        <option value="Admin">Admin</option>
-      </select>
+      />
 
       <button
         type="submit"
