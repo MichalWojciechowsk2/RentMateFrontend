@@ -30,6 +30,7 @@ export type Message = {
   isRead: boolean;
   createdAt: Date;
   chatId: number;
+  user: User;
 };
 
 export type ChatWithContent = {

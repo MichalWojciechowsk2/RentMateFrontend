@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import type { FormEvent } from "react";
 import { getChatWithMessages, sendMessage } from "../../api/chat";
 import {
@@ -8,6 +8,7 @@ import {
 import { GetPropertyById } from "../../api/property";
 import type { Message } from "../../types/Chat";
 import { useAuth } from "../../context/AuthContext.tsx";
+import type { User } from "../../types/User.ts";
 
 type PropertyChatComponentProps = {
   currentUserId?: number;
@@ -23,6 +24,7 @@ const PropertyChatComponent = ({
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [chatGroupId, setChatGroupId] = useState<number | null>(null);
+  const [chatUsers, setChatUsers] = useState<User[]>([]);
 
   const [skip, setSkip] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -53,6 +55,8 @@ const PropertyChatComponent = ({
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
+
+    setChatUsers(data.users);
 
     if (append) {
       setChatMessages((prev) => [...sorted, ...prev]);
@@ -95,6 +99,10 @@ const PropertyChatComponent = ({
     }
   };
 
+  const usersMap = useMemo(() => {
+    return new Map(chatUsers.map((u) => [u.id, u]));
+  }, [chatUsers]);
+
   const handleSend = async (e: FormEvent) => {
     e.preventDefault();
     if (!messageText.trim() || !chatGroupId) return;
@@ -118,6 +126,11 @@ const PropertyChatComponent = ({
             new Date(chatMessages[index - 1].createdAt).toDateString() !==
               new Date(msg.createdAt).toDateString();
 
+          const sender = usersMap.get(msg.senderId);
+
+          const showSenderName =
+            index === 0 || chatMessages[index - 1].senderId !== msg.senderId;
+
           return (
             <div key={msg.id}>
               {showDate && (
@@ -130,6 +143,14 @@ const PropertyChatComponent = ({
                     })}
                   </span>
                 </div>
+              )}
+
+              {msg.senderId !== currentUserId && showSenderName && (
+                <span className="text-xs text-gray-500 mb-1">
+                  {sender
+                    ? `${sender.firstName} ${sender.lastName}`
+                    : "Użytkownik"}
+                </span>
               )}
 
               <div
