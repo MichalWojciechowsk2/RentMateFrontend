@@ -248,10 +248,7 @@ const PropertyDetailPage = () => {
               Właściciel ogłoszenia
             </p>
             <div className="flex items-center space-x-4 mb-4">
-              <Link
-                to={`/user/${propertyOwner?.id}/profile`}
-                className="flex space-x-4 items-center"
-              >
+              <div className="flex space-x-4 items-center text-black">
                 <img
                   src={
                     propertyOwner?.photoUrl ||
@@ -267,7 +264,7 @@ const PropertyDetailPage = () => {
                   </div>
                   <div>⭐{userAvgReview.toFixed(2)}</div>
                 </div>
-              </Link>
+              </div>
             </div>
             {!ownerNumberActive ? (
               <button
