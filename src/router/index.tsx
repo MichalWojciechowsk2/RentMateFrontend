@@ -9,6 +9,7 @@ import AddPropertyPage from "../pages/AddPropertyPage";
 import AddPhotos from "../pages/AddPhotos";
 import ProfilePage from "../pages/ProfilePage";
 import InboxPage from "../pages/InboxPage";
+import AdminPage from "../pages/AdminPage";
 
 export const router = createBrowserRouter([
   {
@@ -51,6 +52,14 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path: "admin",
+        element: (
+          <PrivateRoute>
+            <AdminPage />
+          </PrivateRoute>
+        ),
+      }
     ],
   },
 ]);

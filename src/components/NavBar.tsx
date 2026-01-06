@@ -16,6 +16,7 @@ const NavBar: React.FC = () => {
   const [unreadNoti, setUnreadNoti] = useState<any>(null);
   const [unreadMessages, setUnreadMessages] = useState<any>(null);
 
+  const isAdmin = user?.role === "Administrator" || (user as any)?.userRole === "Administrator";
   useEffect(() => {
     let mounted = true;
 
@@ -46,9 +47,19 @@ const NavBar: React.FC = () => {
 
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center w-full">
-      <Link to="/" className="text-2xl font-bold text-blue-700">
-        RentMate
-      </Link>
+      <div className="flex items-center gap-6">
+        <Link to="/" className="text-2xl font-bold text-blue-700">
+          RentMate
+        </Link>
+        {isAdmin && (
+          <Link
+            to="/admin"
+            className="text-xs uppercase tracking-wider font-bold bg-red-600 text-white px-3 py-1 rounded shadow-sm hover:bg-red-700 transition"
+          >
+            Panel Admina
+          </Link>
+        )}
+      </div>
       <div className="flex gap-6 text-lg">
         <Link to="/properties" className={linkClass("/properties")}>
           Oferty

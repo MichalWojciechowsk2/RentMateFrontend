@@ -13,6 +13,7 @@ type AuthContextType = {
   register: (data: RegisterUser) => Promise<void>;
   refreshUser: () => Promise<void>;
   logout: () => void;
+  loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -21,15 +22,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
+
     if (storedToken) {
       setToken(storedToken);
       getCurrentUserApi()
         .then(setCurrentUser)
         .catch(() => {
           logout();
+        })
+        .finally(() => {
+
+          setLoading(false);
         });
+    } else {
+
+      setLoading(false);
     }
   }, []);
 
@@ -83,6 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         register,
         refreshUser,
         logout,
+        loading,
       }}
     >
       {children}
