@@ -1,41 +1,54 @@
 import { Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import ProfilePage from "./pages/ProfilePage";
-import PrivateRoute from "./router/PrivateRoute";
 import AppLayout from "./layouts/AppLayout";
-import PropertiesPage from "./pages/PropertiesPage";
-import AddPropertyPage from "./pages/AddPropertyPage";
+import PrivateRoute from "./router/PrivateRoute";
 import HomePage from "./pages/HomePage";
-import MyPropertiesPage from "./pages/MyPropertiesPage";
-import PropertyDetailPage from "./pages/PropertyDetailPage";
-// import EditPropertyPage from "./EditPropertyPage";
+import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import MyRentalPage from "./pages/MyRentalPage";
+import PropertiesPage from "./pages/PropertiesPage";
+import MyPropertiesPage from "./pages/MyPropertiesPage";
 import MenagePropertyPage from "./pages/MenagePropertyPage";
+import PropertyDetailPage from "./pages/PropertyDetailPage";
+import AddPropertyPage from "./pages/AddPropertyPage";
 import EditPropertyCreateForm from "./pages/EditPropretyWhileCreate";
 import AddPhotos from "./pages/AddPhotos";
+import ProfilePage from "./pages/ProfilePage";
+import MyRentalPage from "./pages/MyRentalPage";
 import InboxPage from "./pages/InboxPage";
 import MessagePage from "./pages/MessagePage";
-import AddReviewComponent from "./components/review/AddReviewComponent";
+import AdminPage from "./pages/AdminPage";
 
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<AppLayout />}>
+        {/* Publiczne */}
         <Route index element={<HomePage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="properties" element={<PropertiesPage />} />
+        <Route path="property/:id" element={<PropertyDetailPage />} />
+
+        {/* Chronione (Wymagają logowania) */}
         <Route
-          path="/my-properties"
+          path="admin"
+          element={
+            <PrivateRoute>
+              <AdminPage />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="my-properties"
           element={
             <PrivateRoute>
               <MyPropertiesPage />
             </PrivateRoute>
           }
         />
+
         <Route
-          path="/my-properties/:id/menage"
+          path="my-properties/:id/menage"
           element={
             <PrivateRoute>
               <MenagePropertyPage />
@@ -43,8 +56,6 @@ const App = () => {
           }
         />
 
-        {/* <Route path="/edit-property/:id" element={<EditPropertyPage />} /> */}
-        <Route path="/property/:id" element={<PropertyDetailPage />} />
         <Route
           path="add-property"
           element={
@@ -53,6 +64,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
           path=":propertyId/add-photo"
           element={
@@ -61,6 +73,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
           path=":propertyId/edit-propertyCreate"
           element={
@@ -69,6 +82,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
           path="profile"
           element={
@@ -77,6 +91,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
           path="my-rental"
           element={
@@ -85,6 +100,7 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
           path="inbox"
           element={
@@ -93,14 +109,16 @@ const App = () => {
             </PrivateRoute>
           }
         />
+
         <Route
-          path="chats/"
+          path="chats"
           element={
             <PrivateRoute>
               <MessagePage />
             </PrivateRoute>
           }
         />
+
         <Route
           path="chats/:chatId"
           element={

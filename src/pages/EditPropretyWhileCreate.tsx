@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import {
   createProperty,
   UpdateProperty,
-  getCities,
-  getDistricts,
   GetPropertyById,
 } from "../api/property";
-import type { City, District } from "../types/Location";
+
 import { CITY_ID_TO_ENUM } from "../types/Location";
+import { CITY_DISTRICTS } from "../types/Cities";
 import { useNavigate, useParams } from "react-router-dom";
 import { GrNext } from "react-icons/gr";
 
@@ -29,17 +28,23 @@ const EditPropertyCreateForm = () => {
     isActive: 1,
   });
 
-  const [cities, setCities] = useState<City[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
+
+  const [districts, setDistricts] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    getCities().then(setCities).catch(console.error);
-  }, []);
+
+
 
   useEffect(() => {
     if (form.city) {
-      getDistricts(form.city).then(setDistricts).catch(console.error);
+
+
+      const cityName = CITY_ID_TO_ENUM[Number(form.city)];
+      if (cityName && CITY_DISTRICTS[cityName]) {
+        setDistricts(CITY_DISTRICTS[cityName]);
+      } else {
+        setDistricts([]);
+      }
     } else {
       setDistricts([]);
     }
@@ -87,6 +92,7 @@ const EditPropertyCreateForm = () => {
           ...form,
           area: parseFloat(form.area),
           roomCount: parseInt(form.roomCount),
+
           city: CITY_ID_TO_ENUM[Number(form.city)],
           basePrice: parseFloat(form.basePrice),
           baseDeposit: parseFloat(form.baseDeposit),
@@ -146,6 +152,8 @@ const EditPropertyCreateForm = () => {
             required
           />
         </div>
+
+        {/* ZMIANA: Generowanie opcji miast z CITY_ID_TO_ENUM */}
         <div>
           <label className="block mb-1">Miasto:</label>
           <select
@@ -158,13 +166,15 @@ const EditPropertyCreateForm = () => {
             <option value="" className="text-black">
               -- Wybierz miasto --
             </option>
-            {cities.map((c) => (
-              <option key={c.id} value={c.id} className="text-black">
-                {c.name}
+            {Object.entries(CITY_ID_TO_ENUM).map(([id, name]) => (
+              <option key={id} value={id} className="text-black">
+                {name}
               </option>
             ))}
           </select>
         </div>
+
+        {/* ZMIANA: Generowanie opcji dzielnic z prostej tablicy stringów */}
         <div>
           <label className="block mb-1">Dzielnica:</label>
           <select
@@ -179,12 +189,13 @@ const EditPropertyCreateForm = () => {
               -- Wybierz dzielnicę --
             </option>
             {districts.map((d) => (
-              <option key={d.id} value={d.enumName} className="text-black">
-                {d.name}
+              <option key={d} value={d} className="text-black">
+                {d}
               </option>
             ))}
           </select>
         </div>
+
         <div>
           <label className="block mb-1">Ulica i numer mieszkania:</label>
           <input

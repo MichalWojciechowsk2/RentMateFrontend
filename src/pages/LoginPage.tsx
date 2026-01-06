@@ -23,8 +23,13 @@ const LoginPage = () => {
         `Udało się połączyć z api. Email: ${email}, hasło:${password}`
       );
       navigate("/profile");
-    } catch {
-      setError("Nieprawidłowy login lub hasło.");
+    } catch (err: any) {
+      console.error("Błąd logowania:", err);
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Nieprawidłowy login lub hasło.");
+      }
     } finally {
       setLoading(false);
     }
@@ -59,9 +64,8 @@ const LoginPage = () => {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 rounded text-white ${
-            loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
-          }`}
+          className={`w-full py-2 rounded text-white ${loading ? "bg-gray-500" : "bg-blue-600 hover:bg-blue-700"
+            }`}
         >
           {loading ? "Logowanie..." : "Zaloguj się"}
         </button>
